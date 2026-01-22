@@ -1,0 +1,9 @@
+{
+  "message": "Hello from Lab 2!",
+  "interval": 5,
+  "logLevel": "INFO",
+  "logToConsole": true,
+  "logToFile": true,
+  "logFilePath": "/tmp/lab2-config-demo.log",
+  "counterThreshold": 10
+}

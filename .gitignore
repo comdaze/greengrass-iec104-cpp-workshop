@@ -1,0 +1,40 @@
+# Build directories
+build/
+artifacts/
+
+# Compiled binaries
+*.o
+*.so
+*.a
+*.exe
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.log
+*.tmp
+*~
+
+# AWS credentials
+*.pem
+*.key
+credentials
+
+# Docker
+.dockerignore
+
+# Python
+__pycache__/
+*.pyc
+
+# Zip files
+*.zip
+
+# lib60870 source (large)
+lab3-iec104-simulator/lib60870/
+
+# AWS SDK (large)
+lab4-iec104-collector/aws-iot-device-sdk-cpp-v2/
+lab5-iot-integration/aws-iot-device-sdk-cpp-v2/

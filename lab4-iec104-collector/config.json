@@ -1,0 +1,7 @@
+{
+  "serverHost": "localhost",
+  "serverPort": 2404,
+  "reconnectInterval": 5000,
+  "dataTimeout": 30000,
+  "maxReconnectAttempts": 10
+}

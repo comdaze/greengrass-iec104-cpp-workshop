@@ -1,0 +1,66 @@
+---
+RecipeFormatVersion: "2020-01-25"
+ComponentName: "com.example.IEC104SimulatorDocker"
+ComponentVersion: "1.0.3"
+ComponentDescription: "IEC104 Simulator running in Docker container (ECR image)"
+ComponentPublisher: "Workshop"
+
+ComponentConfiguration:
+  DefaultConfiguration:
+    # 替换为实际的ECR镜像URI
+    # 格式: {account-id}.dkr.ecr.{region}.amazonaws.com.cn/iec104-simulator:1.0.0
+    imageUri: "429058178429.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0"
+    port: 2404
+
+Manifests:
+  - Platform:
+      os: linux
+    Lifecycle:
+      Install:
+        Script: |
+          echo "Installing IEC104 Simulator Docker component..."
+          
+      Run:
+        Script: |
+          IMAGE_URI="{configuration:/imageUri}"
+          PORT={configuration:/port}
+          
+          echo "Starting IEC104 Simulator Docker container"
+          echo "Image: ${IMAGE_URI}"
+          
+          # Stop and remove existing container
+          docker stop iec104-simulator 2>/dev/null || true
+          docker rm iec104-simulator 2>/dev/null || true
+          
+          # Login to ECR if using ECR image
+          if echo "${IMAGE_URI}" | grep -q "ecr"; then
+            echo "Logging in to ECR..."
+            AWS_REGION=$(echo ${IMAGE_URI} | cut -d'.' -f4)
+            aws ecr get-login-password --region ${AWS_REGION} | \
+              docker login --username AWS --password-stdin \
+              $(echo ${IMAGE_URI} | cut -d'/' -f1)
+            echo "Pulling image..."
+            docker pull ${IMAGE_URI}
+          fi
+          
+          # Run container
+          docker run -d \
+            --name iec104-simulator \
+            --network host \
+            --restart unless-stopped \
+            ${IMAGE_URI}
+          
+          echo "Container started"
+          
+          # Monitor container (keep script running)
+          while docker ps | grep -q iec104-simulator; do
+            sleep 10
+          done
+          echo "Container stopped unexpectedly"
+          
+      Shutdown:
+        Script: |
+          echo "Stopping IEC104 Simulator Docker container..."
+          docker stop iec104-simulator || true
+          docker rm iec104-simulator || true
+          echo "Container stopped"

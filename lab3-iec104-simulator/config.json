@@ -1,0 +1,57 @@
+{
+  "server": {
+    "port": 2404,
+    "maxConnections": 10,
+    "asduAddress": 1
+  },
+  "dataPoints": [
+    {
+      "address": 1001,
+      "name": "wind_turbine_1_active_power",
+      "baseValue": 1500.0,
+      "variation": 200.0,
+      "updateInterval": 1000,
+      "unit": "kW"
+    },
+    {
+      "address": 1002,
+      "name": "wind_turbine_1_reactive_power",
+      "baseValue": 200.0,
+      "variation": 50.0,
+      "updateInterval": 1000,
+      "unit": "kVar"
+    },
+    {
+      "address": 1003,
+      "name": "wind_turbine_1_wind_speed",
+      "baseValue": 8.5,
+      "variation": 2.0,
+      "updateInterval": 1000,
+      "unit": "m/s"
+    },
+    {
+      "address": 2001,
+      "name": "energy_storage_soc",
+      "baseValue": 75.0,
+      "variation": 10.0,
+      "updateInterval": 1000,
+      "unit": "%"
+    },
+    {
+      "address": 2002,
+      "name": "energy_storage_charge_power",
+      "baseValue": 500.0,
+      "variation": 100.0,
+      "updateInterval": 1000,
+      "unit": "kW"
+    },
+    {
+      "address": 3001,
+      "name": "substation_voltage",
+      "baseValue": 35.0,
+      "variation": 1.0,
+      "updateInterval": 1000,
+      "unit": "kV"
+    }
+  ]
+}

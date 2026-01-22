@@ -1,0 +1,41 @@
+---
+RecipeFormatVersion: "2020-01-25"
+ComponentName: "com.example.HelloWorld"
+ComponentVersion: "1.0.0"
+ComponentDescription: "A simple Hello World component for Greengrass"
+ComponentPublisher: "Workshop"
+
+ComponentConfiguration:
+  DefaultConfiguration:
+    message: "Hello from Greengrass!"
+    interval: 5
+
+Manifests:
+  - Platform:
+      os: "linux"
+    Lifecycle:
+      Install:
+        Script: |
+          echo "Installing HelloWorld component..."
+          chmod +x {artifacts:decompressedPath}/hello_world/hello_world
+          
+      Run:
+        Script: |
+          echo "{configuration:/message}" > /tmp/config.json.tmp
+          echo "{configuration:/interval}" >> /tmp/config.json.tmp
+          cat > /tmp/config.json << EOF
+          {
+            "message": "{configuration:/message}",
+            "interval": {configuration:/interval}
+          }
+          EOF
+          {artifacts:decompressedPath}/hello_world/hello_world /tmp/config.json
+        
+      Shutdown:
+        Script: |
+          echo "Shutting down HelloWorld component..."
+          pkill -TERM hello_world || true
+          
+    Artifacts:
+      - URI: "s3://your-bucket/com.example.HelloWorld/1.0.0/com.example.HelloWorld-1.0.0.zip"
+        Unarchive: ZIP

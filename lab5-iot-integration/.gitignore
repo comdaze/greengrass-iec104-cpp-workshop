@@ -1,0 +1,6 @@
+build/
+artifacts/
+*.zip
+*.log
+__pycache__/
+*.pyc

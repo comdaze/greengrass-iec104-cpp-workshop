@@ -1,0 +1,55 @@
+---
+RecipeFormatVersion: "2020-01-25"
+ComponentName: "com.example.IEC104Collector"
+ComponentVersion: "1.0.16"
+ComponentDescription: "IEC104 data collector with IPC publish capability"
+ComponentPublisher: "Workshop"
+
+ComponentConfiguration:
+  DefaultConfiguration:
+    serverHost: "localhost"
+    serverPort: 2404
+    reconnectInterval: 5000
+    ipcTopic: "iec104/data"
+    accessControl:
+      aws.greengrass.ipc.pubsub:
+        "com.example.IEC104Collector:pubsub:1":
+          policyDescription: "Allow publishing to iec104/data topic"
+          operations:
+            - "aws.greengrass#PublishToTopic"
+          resources:
+            - "iec104/data"
+
+ComponentDependencies: {}
+
+Manifests:
+  - Platform:
+      os: "linux"
+    Lifecycle:
+      Install:
+        RequiresPrivilege: false
+        Script: |
+          echo "Installing IEC104 Collector..."
+          chmod +x {artifacts:decompressedPath}/com.example.IEC104Collector-1.0.16/iec104_collector/iec104_collector
+          
+      Run:
+        Script: |
+          cat > /tmp/collector-config.json << EOF
+          {
+            "serverHost": "{configuration:/serverHost}",
+            "serverPort": {configuration:/serverPort},
+            "reconnectInterval": {configuration:/reconnectInterval},
+            "ipcTopic": "{configuration:/ipcTopic}"
+          }
+          EOF
+          {artifacts:decompressedPath}/com.example.IEC104Collector-1.0.16/iec104_collector/iec104_collector /tmp/collector-config.json
+        
+      Shutdown:
+        Script: |
+          echo "Shutting down IEC104 Collector..."
+          pkill -TERM iec104_collector || true
+              
+    Artifacts:
+      - URI: "s3://iec104-components-1769083050/com.example.IEC104Collector/1.0.16/com.example.IEC104Collector-1.0.16.zip"
+        Unarchive: ZIP
+

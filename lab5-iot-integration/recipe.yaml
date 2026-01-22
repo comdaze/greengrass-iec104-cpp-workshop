@@ -1,0 +1,59 @@
+---
+RecipeFormatVersion: "2020-01-25"
+ComponentName: "com.example.IoTPublisher"
+ComponentVersion: "1.0.4"
+ComponentDescription: "IoT Core publisher with IPC subscription"
+ComponentPublisher: "Workshop"
+
+ComponentConfiguration:
+  DefaultConfiguration:
+    ipcTopic: "iec104/data"
+    iotTopic: "wind-farm/data"
+    accessControl:
+      aws.greengrass.ipc.pubsub:
+        "com.example.IoTPublisher:pubsub:1":
+          policyDescription: "Allow subscribing to iec104/data topic"
+          operations:
+            - "aws.greengrass#SubscribeToTopic"
+          resources:
+            - "iec104/data"
+      aws.greengrass.ipc.mqttproxy:
+        "com.example.IoTPublisher:mqttproxy:1":
+          policyDescription: "Allow publishing to IoT Core"
+          operations:
+            - "aws.greengrass#PublishToIoTCore"
+          resources:
+            - "wind-farm/data"
+
+ComponentDependencies:
+  com.example.IEC104Collector:
+    VersionRequirement: ">=1.0.4"
+    DependencyType: "SOFT"
+
+Manifests:
+  - Platform:
+      os: "linux"
+    Lifecycle:
+      Install:
+        Script: |
+          echo "Installing IoT Publisher..."
+          chmod +x {artifacts:decompressedPath}/com.example.IoTPublisher-1.0.4/iot_publisher/iot_publisher
+          
+      Run:
+        Script: |
+          cat > /tmp/iot-publisher-config.json << EOF
+          {
+            "ipcTopic": "{configuration:/ipcTopic}",
+            "iotTopic": "{configuration:/iotTopic}"
+          }
+          EOF
+          {artifacts:decompressedPath}/com.example.IoTPublisher-1.0.4/iot_publisher/iot_publisher /tmp/iot-publisher-config.json
+        
+      Shutdown:
+        Script: |
+          echo "Shutting down IoT Publisher..."
+          pkill -TERM iot_publisher || true
+              
+    Artifacts:
+      - URI: "s3://iec104-components-1769083050/com.example.IoTPublisher/1.0.4/com.example.IoTPublisher-1.0.4.zip"
+        Unarchive: ZIP
