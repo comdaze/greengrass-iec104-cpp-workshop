@@ -1,223 +1,377 @@
-# AWS Greengrass Workshop - IEC104数据采集系统
+# AWS Greengrass Workshop - IEC104 边缘到云数据管道
 
-欢迎参加AWS Greengrass Workshop！本Workshop将带你从零开始，逐步构建一个完整的IEC104数据采集系统。
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Greengrass](https://img.shields.io/badge/AWS%20Greengrass-v2.16.1-orange.svg)](https://aws.amazon.com/greengrass/)
+[![IEC104](https://img.shields.io/badge/IEC%2060870--5--104-lib60870-green.svg)](https://github.com/mz-automation/lib60870)
 
-## Workshop概览
+完整的工业物联网数据采集系统，使用真实的 IEC 60870-5-104 协议实现，通过 AWS IoT Greengrass 将边缘设备数据安全地传输到 AWS IoT Core。
 
-通过本Workshop，你将学习：
-- AWS IoT Greengrass核心概念
-- 组件开发和部署流程
-- 边缘计算最佳实践
-- IEC104工业协议集成
-- 云边协同架构设计
+## 🎯 项目概览
 
-## 实验列表
+本项目展示了如何构建一个生产级的边缘到云数据管道：
 
-### Lab 1: 部署第一个Greengrass组件 ⭐
-**时长**: 30分钟  
-**难度**: 入门
-
-学习Greengrass组件的基本结构，创建并部署一个简单的Hello World组件。
-
-**你将学到**：
-- Greengrass组件结构
-- Recipe文件编写
-- 组件构建和打包
-- 部署和配置管理
-
-[开始Lab 1 →](./lab1-hello-world/)
-
-### Lab 2: 配置管理和日志 ⭐⭐
-**时长**: 45分钟  
-**难度**: 中级
-
-学习如何管理组件配置，实现动态配置更新，以及多级日志系统。
-
-**你将学到**：
-- 多级日志系统（DEBUG/INFO/WARN/ERROR）
-- 动态配置更新
-- 日志文件管理
-- 配置验证和默认值
-
-[开始Lab 2 →](./lab2-config-logging/)
-
-### Lab 3: IEC104模拟器组件 ⭐⭐
-**时长**: 60分钟  
-**难度**: 中级
-
-部署IEC104协议模拟器，模拟风电和储能设备数据。
-
-**你将学到**：
-- IEC 60870-5-104协议基础
-- TCP服务器实现
-- 模拟数据生成
-- 工业协议组件开发
-
-[开始Lab 3 →](./lab3-iec104-simulator/)
-
-### Lab 4: IEC104数据采集组件 ⭐⭐⭐
-**时长**: 90分钟  
-**难度**: 高级
-
-部署完整的数据采集程序，实现与模拟器的通信和数据处理。
-
-**你将学到**：
-- IEC104客户端实现
-- 组件间依赖管理
-- 数据采集和处理
-- 本地数据存储
-
-[开始Lab 4 →](./lab4-iec104-collector/)
-
-### Lab 5: AWS IoT Core集成 ⭐⭐⭐
-**时长**: 60分钟  
-**难度**: 高级
-
-将采集的数据发送到AWS IoT Core，实现云边数据同步。
-
-**你将学到**：
-- Greengrass IPC通信
-- MQTT消息发布
-- IoT Core集成
-- 云边协同架构
-
-[开始Lab 5 →](./lab5-iot-integration/)
-
-## 前置条件
-
-### 必需
-- AWS账号（具有IoT和Greengrass权限）
-- Linux环境（Ubuntu 20.04+推荐）
-- 基本的Linux命令行知识
-- 基本的C++编程知识
-
-### 推荐
-- Docker基础知识
-- AWS CLI使用经验
-- 工业协议基础了解
-
-## 环境准备
-
-### 1. 安装AWS CLI
-
-```bash
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
+```
+IEC104 设备模拟器 (lib60870)
+    ↓ TCP/IP - IEC 60870-5-104 协议
+IEC104 数据采集器
+    ↓ Greengrass IPC Pubsub
+IoT 数据发布器
+    ↓ MQTT over TLS
+AWS IoT Core
 ```
 
-### 2. 配置AWS凭证
+### 核心特性
 
+- ✅ **真实协议实现**：使用 lib60870-C 库，完整实现 IEC 60870-5-104 标准
+- ✅ **边缘计算**：在 Greengrass 边缘运行时处理和过滤数据
+- ✅ **IPC 通信**：组件间使用 Greengrass IPC pubsub 解耦通信
+- ✅ **云端集成**：安全地将数据发送到 AWS IoT Core
+- ✅ **容器化部署**：模拟器使用 Docker 容器，易于部署和管理
+- ✅ **生产就绪**：包含错误处理、日志记录、配置管理
+
+## 📚 实验列表
+
+### Lab 3: IEC104 模拟器 ⭐⭐
+**时长**: 60分钟 | **难度**: 中级
+
+使用 lib60870-C 库实现真实的 IEC104 协议服务器，模拟风电和储能设备数据。
+
+**技术栈**：
+- C++ 17
+- lib60870-C (IEC 60870-5-104)
+- Docker
+- AWS Greengrass Docker Component
+
+**你将学到**：
+- IEC 60870-5-104 协议基础
+- lib60870 库的使用
+- Docker 容器化部署
+- Greengrass Docker 组件开发
+
+[查看 Lab 3 详情 →](./lab3-iec104-simulator/)
+
+### Lab 4: IEC104 数据采集器 ⭐⭐⭐
+**时长**: 90分钟 | **难度**: 高级
+
+实现 IEC104 客户端，采集数据并通过 Greengrass IPC pubsub 发布。
+
+**技术栈**：
+- C++ 17
+- lib60870-C (IEC 60870-5-104 Client)
+- AWS IoT Device SDK for C++ v2
+- Greengrass IPC
+
+**你将学到**：
+- IEC104 客户端实现
+- Greengrass IPC pubsub 发布
+- 数据过滤和转换
+- 组件间通信
+
+**关键代码**：
+```cpp
+// IPC 发布示例
+PublishToTopicRequest request;
+request.SetTopic("iec104/data");
+auto operation = ipcClient.NewPublishToTopic();
+auto activate = operation->Activate(request, nullptr).get();
+```
+
+[查看 Lab 4 详情 →](./lab4-iec104-collector/)
+
+### Lab 5: IoT Core 集成 ⭐⭐⭐
+**时长**: 60分钟 | **难度**: 高级
+
+订阅 IPC topic 并将数据转发到 AWS IoT Core。
+
+**技术栈**：
+- C++ 17
+- AWS IoT Device SDK for C++ v2
+- Greengrass IPC (pubsub + mqttproxy)
+- 异步消息队列
+
+**你将学到**：
+- IPC topic 订阅
+- PublishToIoTCore 操作
+- 异步消息处理（避免回调阻塞）
+- IoT Core MQTT 集成
+
+**架构亮点**：
+- 使用消息队列解耦 IPC 回调和 IoT Core 发布
+- 避免在 StreamHandler 回调中执行阻塞操作
+- 主线程处理消息队列，确保事件循环不被阻塞
+
+[查看 Lab 5 详情 →](./lab5-iot-integration/)
+
+## 🚀 快速开始
+
+### 前置条件
+
+- AWS 账号（具有 IoT 和 Greengrass 权限）
+- Linux 环境（Ubuntu 20.04+ 或 Amazon Linux 2）
+- Docker（用于 Lab 3 模拟器）
+- AWS CLI v2
+- CMake 3.10+
+- GCC 7+ 或 Clang 6+
+
+### 环境准备
+
+1. **安装 AWS CLI**
 ```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
 aws configure
 ```
 
-### 3. 安装Greengrass Core
-
-参考[官方文档](https://docs.aws.amazon.com/greengrass/v2/developerguide/getting-started.html)安装Greengrass Core v2。
-
-快速安装：
+2. **安装 Greengrass Core**
 ```bash
 curl -s https://d2s8p88vqu9w66.cloudfront.net/releases/greengrass-nucleus-latest.zip > greengrass-nucleus-latest.zip
 unzip greengrass-nucleus-latest.zip -d GreengrassInstaller
 sudo -E java -Droot="/greengrass/v2" -Dlog.store=FILE \
   -jar ./GreengrassInstaller/lib/Greengrass.jar \
-  --aws-region us-east-1 \
+  --aws-region ap-northeast-1 \
   --thing-name MyGreengrassCore \
-  --thing-group-name MyGreengrassCoreGroup \
-  --component-default-user ggc_user:ggc_group \
   --provision true \
   --setup-system-service true
 ```
 
-### 4. 安装开发工具
-
+3. **创建 S3 存储桶**
 ```bash
-sudo apt-get update
-sudo apt-get install -y build-essential cmake git python3-pip
-pip3 install pyyaml
+export COMPONENT_BUCKET=iec104-components-$(date +%s)
+export AWS_REGION=ap-northeast-1
+aws s3 mb s3://${COMPONENT_BUCKET} --region ${AWS_REGION}
 ```
 
-### 5. 创建S3存储桶
+### 部署完整系统
 
 ```bash
-export COMPONENT_BUCKET=my-greengrass-components-$(date +%s)
-aws s3 mb s3://${COMPONENT_BUCKET}
+# 1. 构建并部署 Lab 3 (IEC104 Simulator)
+cd lab3-iec104-simulator
+./docker-build.sh
+./deploy.sh
+
+# 2. 构建并部署 Lab 4 (IEC104 Collector)
+cd ../lab4-iec104-collector
+./build.sh
+./package.sh
+./deploy.sh
+
+# 3. 构建并部署 Lab 5 (IoT Publisher)
+cd ../lab5-iot-integration
+./build.sh
+./package.sh
+./deploy.sh
 ```
 
-## 验证环境
+### 验证部署
 
 ```bash
-# 检查Greengrass状态
-sudo systemctl status greengrass
-
-# 检查Greengrass CLI
+# 检查组件状态
 sudo /greengrass/v2/bin/greengrass-cli component list
 
-# 检查AWS CLI
-aws sts get-caller-identity
-```
-
-## 获取Workshop代码
-
-```bash
-cd /home/ubuntu/iec104-greengrass/workshop
-ls -la
-```
-
-## 学习路径
-
-```
-Lab 1 (Hello World)
-    ↓
-Lab 2 (配置和日志)
-    ↓
-Lab 3 (IEC104模拟器)
-    ↓
-Lab 4 (数据采集)
-    ↓
-Lab 5 (IoT Core集成)
-```
-
-## 故障排除
-
-### Greengrass无法启动
-
-```bash
 # 查看日志
-sudo journalctl -u greengrass -f
+sudo tail -f /greengrass/v2/logs/com.example.IEC104Collector.log
+sudo tail -f /greengrass/v2/logs/com.example.IoTPublisher.log
 
-# 检查配置
-sudo cat /greengrass/v2/config/effectiveConfig.yaml
+# 测试 IoT Core 发布
+sudo /greengrass/v2/bin/greengrass-cli iotcore pub \
+  --topic test/topic \
+  --message '{"test":"message"}'
 ```
 
-### 权限问题
+## 📊 数据流
 
+### 完整数据流程
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  IEC104 Simulator (Docker Container)                           │
+│  - lib60870 CS104_Slave                                         │
+│  - TCP Port 2404                                                │
+│  - 模拟 6 个数据点 (风电 + 储能)                                  │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ IEC 60870-5-104 Protocol
+                     │ TypeID=11 (MeasuredValueScaled)
+                     ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  IEC104 Collector                                               │
+│  - lib60870 CS104_Connection                                    │
+│  - 过滤目标数据点 (IOA 1001, 2001)                               │
+│  - 转换为 JSON 格式                                              │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ Greengrass IPC Pubsub
+                     │ Topic: iec104/data
+                     ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  IoT Publisher                                                  │
+│  - 订阅 IPC topic                                                │
+│  - 消息队列缓冲                                                   │
+│  - 主线程异步发布                                                 │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ MQTT over TLS
+                     │ Topic: wind-farm/data
+                     │ QoS: AT_LEAST_ONCE
+                     ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  AWS IoT Core                                                   │
+│  - MQTT Broker                                                  │
+│  - Rules Engine                                                 │
+│  - 可连接到其他 AWS 服务                                          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 数据格式
+
+**IEC104 原始数据**：
+```
+TypeID: 11 (M_ME_NB_1 - MeasuredValueScaled)
+IOA: 1001, Value: 1500 (风机有功功率)
+IOA: 2001, Value: 75   (储能 SOC)
+```
+
+**JSON 输出**：
+```json
+[
+  {
+    "address": 1001,
+    "name": "wind_turbine_1_active_power",
+    "value": 1500.0,
+    "unit": "kW",
+    "timestamp": 1769090540
+  },
+  {
+    "address": 2001,
+    "name": "energy_storage_soc",
+    "value": 75.0,
+    "unit": "%",
+    "timestamp": 1769090540
+  }
+]
+```
+
+## 🔧 技术细节
+
+### IEC 60870-5-104 协议
+
+IEC 60870-5-104 是电力系统中广泛使用的通信协议，基于 TCP/IP。
+
+**关键特性**：
+- 面向连接的 TCP 通信
+- 支持多种数据类型（遥测、遥信、遥控）
+- 时间戳和质量标识
+- 总召唤（Interrogation）机制
+
+**本项目使用的数据类型**：
+- TypeID 11 (M_ME_NB_1): MeasuredValueScaled - 标度化测量值
+
+### Greengrass IPC
+
+**IPC Pubsub**：
+- 组件间本地消息传递
+- 无需网络连接
+- 低延迟、高吞吐
+
+**IPC MQTTProxy**：
+- 将消息发布到 AWS IoT Core
+- 自动处理连接和重试
+- 支持 QoS 0 和 QoS 1
+
+### 关键设计决策
+
+1. **异步消息处理**
+   - 问题：在 IPC StreamHandler 回调中直接调用 PublishToIoTCore 会阻塞事件循环
+   - 解决：使用消息队列，在主线程中处理发布
+
+2. **AccessControl 配置**
+   - 必须在 ComponentConfiguration.DefaultConfiguration 中定义
+   - 部署时需要在 configurationUpdate.merge 中包含
+   - 否则权限不会生效
+
+3. **ApiHandle 初始化**
+   - 必须传递 `g_allocator`：`ApiHandle apiHandle(g_allocator)`
+   - 否则 IPC 连接会失败
+
+## 📖 文档
+
+- [Lab 3 - IEC104 Simulator](./lab3-iec104-simulator/README.md)
+- [Lab 4 - IEC104 Collector](./lab4-iec104-collector/README.md)
+- [Lab 5 - IoT Publisher](./lab5-iot-integration/README.md)
+- [IPC Pubsub 详解](./lab4-iec104-collector/README-IPC.md)
+
+## 🐛 故障排除
+
+### IPC 发布超时
+
+**症状**：`[ERROR] IPC publish timeout`
+
+**原因**：
+1. accessControl 配置未生效
+2. ApiHandle 未正确初始化
+3. 在回调中执行阻塞操作
+
+**解决**：
+```cpp
+// 1. 正确初始化
+ApiHandle apiHandle(g_allocator);
+
+// 2. 检查连接状态
+auto connectionStatus = ipcClient.Connect(lifecycleHandler).get();
+if (!connectionStatus) {
+    // 处理错误
+}
+
+// 3. 在主线程发布，不在回调中
+```
+
+### 组件无法启动
+
+**症状**：组件状态为 BROKEN
+
+**检查**：
 ```bash
-# 确保Greengrass用户有正确权限
-sudo usermod -aG docker ggc_user
+# 查看详细日志
+sudo tail -100 /greengrass/v2/logs/greengrass.log
+sudo tail -100 /greengrass/v2/logs/com.example.*.log
+
+# 检查权限
+ls -la /greengrass/v2/packages/artifacts-unarchived/
 ```
 
-### 网络问题
+### Docker 容器无法启动
 
-确保设备可以访问：
-- AWS IoT Core endpoint
-- S3 endpoint
-- Greengrass服务endpoint
+**症状**：IEC104SimulatorDocker 组件 BROKEN
 
-## 资源
+**检查**：
+```bash
+# 检查 Docker 服务
+sudo systemctl status docker
 
-- [AWS IoT Greengrass文档](https://docs.aws.amazon.com/greengrass/)
-- [IEC 60870-5-104协议](https://en.wikipedia.org/wiki/IEC_60870-5)
-- [Workshop反馈](https://github.com/your-repo/issues)
+# 检查镜像
+docker images | grep iec104-simulator
 
-## 支持
+# 手动运行测试
+docker run -p 2404:2404 <image-id>
+```
 
-遇到问题？
-- 查看各Lab的故障排除章节
-- 提交Issue到GitHub
-- 联系Workshop讲师
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📄 许可证
+
+MIT License
+
+## 🔗 相关资源
+
+- [AWS IoT Greengrass 文档](https://docs.aws.amazon.com/greengrass/)
+- [lib60870 GitHub](https://github.com/mz-automation/lib60870)
+- [IEC 60870-5-104 标准](https://en.wikipedia.org/wiki/IEC_60870-5)
+- [AWS IoT Device SDK for C++ v2](https://github.com/aws/aws-iot-device-sdk-cpp-v2)
+
+## 👥 作者
+
+Workshop Participant
 
 ---
 
-准备好了吗？[开始Lab 1 →](./lab1-hello-world/)
+**永不妥协的实现** - 使用真实的工业协议，构建生产级的边缘到云数据管道。
