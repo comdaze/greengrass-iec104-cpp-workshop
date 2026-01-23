@@ -17,7 +17,7 @@ Manifests:
       Install:
         Script: |
           echo "Installing HelloWorld component..."
-          chmod +x {artifacts:decompressedPath}/hello_world/hello_world
+          chmod +x {artifacts:decompressedPath}/com.example.HelloWorld-1.0.0/hello_world/hello_world
           
       Run:
         Script: |
@@ -29,7 +29,7 @@ Manifests:
             "interval": {configuration:/interval}
           }
           EOF
-          {artifacts:decompressedPath}/hello_world/hello_world /tmp/config.json
+          {artifacts:decompressedPath}/com.example.HelloWorld-1.0.0/hello_world/hello_world /tmp/config.json
         
       Shutdown:
         Script: |
