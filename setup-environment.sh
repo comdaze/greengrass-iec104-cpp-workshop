@@ -115,7 +115,7 @@ fi
 
 # 6.2 安装 lib60870 (IEC104 协议库)
 echo "  - 安装 lib60870..."
-if [ ! -f "/usr/local/lib/lib60870.a" ]; then
+if [ ! -f "/usr/local/lib/liblib60870.a" ] && [ ! -f "/usr/local/lib/liblib60870.so" ]; then
     cd /tmp
     git clone --depth 1 https://github.com/mz-automation/lib60870.git
     cd lib60870/lib60870-C
@@ -236,7 +236,7 @@ if [ -f "/usr/local/include/nlohmann/json.hpp" ]; then
 else
     echo "  ✗ nlohmann/json: 未安装"
 fi
-if [ -f "/usr/local/lib/lib60870.a" ]; then
+if [ -f "/usr/local/lib/liblib60870.a" ] || [ -f "/usr/local/lib/liblib60870.so" ]; then
     echo "  ✓ lib60870: 已安装"
 else
     echo "  ✗ lib60870: 未安装"
