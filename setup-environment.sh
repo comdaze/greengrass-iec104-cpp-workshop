@@ -31,6 +31,7 @@ sudo apt-get install -y \
     wget \
     curl \
     unzip \
+    zip \
     netcat-openbsd \
     jq \
     vim
