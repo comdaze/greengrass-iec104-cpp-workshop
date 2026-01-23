@@ -93,31 +93,165 @@ else
     echo "Java 已安装: $(java -version 2>&1 | head -n 1)"
 fi
 
-# 6. 配置用户权限
+# 6. 安装 C++ 依赖库
 echo ""
-echo "[6/8] 配置用户权限..."
+echo "[6/11] 安装 C++ 依赖库..."
+
+# 6.1 安装 nlohmann/json (JSON 库)
+echo "  - 安装 nlohmann/json..."
+if [ ! -f "/usr/local/include/nlohmann/json.hpp" ]; then
+    cd /tmp
+    wget -q https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
+    tar -xf json.tar.xz
+    cd json
+    sudo mkdir -p /usr/local/include/nlohmann
+    sudo cp -r include/nlohmann/* /usr/local/include/nlohmann/
+    cd /tmp
+    rm -rf json json.tar.xz
+    echo "    ✓ nlohmann/json 安装完成"
+else
+    echo "    ✓ nlohmann/json 已安装"
+fi
+
+# 6.2 安装 lib60870 (IEC104 协议库)
+echo "  - 安装 lib60870..."
+if [ ! -f "/usr/local/lib/lib60870.a" ]; then
+    cd /tmp
+    git clone --depth 1 https://github.com/mz-automation/lib60870.git
+    cd lib60870/lib60870-C
+    mkdir -p build
+    cd build
+    cmake ..
+    make -j$(nproc)
+    sudo make install
+    sudo ldconfig
+    cd /tmp
+    rm -rf lib60870
+    echo "    ✓ lib60870 安装完成"
+else
+    echo "    ✓ lib60870 已安装"
+fi
+
+# 6.3 安装 AWS IoT Device SDK for C++ v2 依赖
+echo "  - 安装 AWS IoT SDK 依赖..."
+sudo apt-get install -y \
+    libssl-dev \
+    zlib1g-dev \
+    libcurl4-openssl-dev \
+    uuid-dev
+
+# 注意: AWS IoT SDK 本身通过 git submodule 在各 lab 中下载
+echo "    ✓ AWS IoT SDK 依赖安装完成"
+echo "    (SDK 本身将在各 lab 中通过 git submodule 下载)"
+
+# 7. 配置用户权限
+echo ""
+echo "[7/11] 配置用户权限..."
 CURRENT_USER=${SUDO_USER:-$USER}
 sudo usermod -aG docker $CURRENT_USER
 echo "已将 $CURRENT_USER 添加到 docker 组"
 
-# 7. 创建 Greengrass 目录
+# 8. 创建 Greengrass 目录
 echo ""
-echo "[7/8] 创建 Greengrass 目录..."
+echo "[8/11] 创建 Greengrass 目录..."
 sudo mkdir -p /greengrass/v2
 sudo chown -R $CURRENT_USER:$CURRENT_USER /greengrass
 echo "Greengrass 目录创建完成"
 
-# 8. 验证安装
+# 9. 下载 Workshop 代码 (如果还没有)
 echo ""
-echo "[8/8] 验证安装..."
-echo "----------------------------------------"
-echo "✓ GCC: $(gcc --version | head -n 1)"
-echo "✓ CMake: $(cmake --version | head -n 1)"
-echo "✓ Git: $(git --version)"
-echo "✓ AWS CLI: $(aws --version)"
-echo "✓ Docker: $(docker --version)"
-echo "✓ Java: $(java -version 2>&1 | head -n 1)"
-echo "----------------------------------------"
+echo "[9/11] 检查 Workshop 代码..."
+WORKSHOP_DIR="/home/$CURRENT_USER/workshop"
+if [ ! -d "$WORKSHOP_DIR" ]; then
+    echo "  Workshop 代码不存在,请手动克隆:"
+    echo "  git clone <repository-url> $WORKSHOP_DIR"
+else
+    echo "  ✓ Workshop 代码已存在: $WORKSHOP_DIR"
+    
+    # 初始化 git submodules (AWS IoT SDK)
+    echo "  - 初始化 git submodules..."
+    cd $WORKSHOP_DIR
+    
+    # Lab 4 - IEC104 Collector
+    if [ -d "lab4-iec104-collector" ]; then
+        cd lab4-iec104-collector
+        if [ -f ".gitmodules" ]; then
+            git submodule update --init --recursive 2>/dev/null || echo "    (lab4 submodule 已初始化或不存在)"
+        fi
+        cd ..
+    fi
+    
+    # Lab 5 - IoT Integration
+    if [ -d "lab5-iot-integration" ]; then
+        cd lab5-iot-integration
+        if [ -f ".gitmodules" ]; then
+            git submodule update --init --recursive 2>/dev/null || echo "    (lab5 submodule 已初始化或不存在)"
+        fi
+        cd ..
+    fi
+    
+    echo "  ✓ Git submodules 初始化完成"
+fi
+
+# 10. 复制 nlohmann/json 到各 lab 目录
+echo ""
+echo "[10/11] 复制依赖库到 lab 目录..."
+if [ -d "$WORKSHOP_DIR" ]; then
+    # Lab 1
+    if [ -d "$WORKSHOP_DIR/lab1-hello-world" ] && [ ! -d "$WORKSHOP_DIR/lab1-hello-world/nlohmann" ]; then
+        cp -r /usr/local/include/nlohmann "$WORKSHOP_DIR/lab1-hello-world/"
+        echo "  ✓ 复制 nlohmann 到 lab1"
+    fi
+    
+    # Lab 2
+    if [ -d "$WORKSHOP_DIR/lab2-config-logging" ] && [ ! -d "$WORKSHOP_DIR/lab2-config-logging/nlohmann" ]; then
+        cp -r /usr/local/include/nlohmann "$WORKSHOP_DIR/lab2-config-logging/"
+        echo "  ✓ 复制 nlohmann 到 lab2"
+    fi
+    
+    # Lab 3
+    if [ -d "$WORKSHOP_DIR/lab3-iec104-simulator" ] && [ ! -d "$WORKSHOP_DIR/lab3-iec104-simulator/nlohmann" ]; then
+        cp -r /usr/local/include/nlohmann "$WORKSHOP_DIR/lab3-iec104-simulator/"
+        echo "  ✓ 复制 nlohmann 到 lab3"
+    fi
+    
+    echo "  ✓ 依赖库复制完成"
+fi
+
+# 11. 验证安装
+echo ""
+echo "[11/11] 验证安装..."
+echo "=========================================="
+echo "系统工具:"
+echo "  ✓ GCC: $(gcc --version | head -n 1)"
+echo "  ✓ CMake: $(cmake --version | head -n 1)"
+echo "  ✓ Git: $(git --version)"
+echo "  ✓ AWS CLI: $(aws --version)"
+echo "  ✓ Docker: $(docker --version)"
+echo "  ✓ Java: $(java -version 2>&1 | head -n 1)"
+echo ""
+echo "C++ 依赖库:"
+if [ -f "/usr/local/include/nlohmann/json.hpp" ]; then
+    echo "  ✓ nlohmann/json: 已安装"
+else
+    echo "  ✗ nlohmann/json: 未安装"
+fi
+if [ -f "/usr/local/lib/lib60870.a" ]; then
+    echo "  ✓ lib60870: 已安装"
+else
+    echo "  ✗ lib60870: 未安装"
+fi
+if [ -d "$WORKSHOP_DIR/lab4-iec104-collector/aws-iot-device-sdk-cpp-v2" ]; then
+    echo "  ✓ AWS IoT SDK (lab4): 已下载"
+else
+    echo "  ⚠ AWS IoT SDK (lab4): 未下载 (将在构建时自动下载)"
+fi
+if [ -d "$WORKSHOP_DIR/lab5-iot-integration/aws-iot-device-sdk-cpp-v2" ]; then
+    echo "  ✓ AWS IoT SDK (lab5): 已下载"
+else
+    echo "  ⚠ AWS IoT SDK (lab5): 未下载 (将在构建时自动下载)"
+fi
+echo "=========================================="
 
 echo ""
 echo "=========================================="
