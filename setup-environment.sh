@@ -23,7 +23,7 @@ sudo apt-get upgrade -y
 
 # 2. 安装基础开发工具
 echo ""
-echo "[2/8] 安装基础开发工具..."
+echo "[2/11] 安装基础开发工具..."
 sudo apt-get install -y \
     build-essential \
     cmake \
@@ -31,7 +31,7 @@ sudo apt-get install -y \
     wget \
     curl \
     unzip \
-    netcat \
+    netcat-openbsd \
     jq \
     vim
 
