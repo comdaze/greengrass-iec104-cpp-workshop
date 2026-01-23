@@ -104,6 +104,18 @@ auto activate = operation->Activate(request, nullptr).get();
 
 ## 🚀 快速开始
 
+### 全新环境一键安装
+
+如果你是在全新的 Ubuntu 服务器上部署，使用一键安装脚本：
+
+```bash
+git clone https://github.com/comdaze/greengrass-iec104-cpp-workshop.git workshop
+cd workshop
+./setup-environment.sh
+```
+
+**详细安装指南**: [INSTALLATION.md](./INSTALLATION.md)
+
 ### 前置条件
 
 - AWS 账号（具有 IoT 和 Greengrass 权限）
