@@ -55,8 +55,8 @@ AWS IoT Core
 
 ```bash
 # 1. 克隆项目
-git clone <repository-url> workshop
-cd workshop
+git clone https://github.com/comdaze/greengrass-iec104-cpp-workshop.git
+cd greengrass-iec104-cpp-workshop
 
 # 2. 安装依赖环境
 ./setup-environment.sh
@@ -77,7 +77,7 @@ export AWS_REGION=cn-north-1
 aws s3 mb s3://${COMPONENT_BUCKET} --region ${AWS_REGION}
 ```
 
-详细安装步骤请参考 [安装指南](#安装指南)。
+详细安装步骤请参考 [安装指南](#-安装指南)。
 
 ## 📚 实验列表
 
@@ -266,8 +266,8 @@ AWS IoT Core
 
 ```bash
 cd ~
-git clone <repository-url> workshop
-cd workshop
+git clone https://github.com/comdaze/greengrass-iec104-cpp-workshop.git
+cd greengrass-iec104-cpp-workshop
 ```
 
 ### 步骤 2: 安装依赖环境
