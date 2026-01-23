@@ -1354,19 +1354,211 @@ docker stats iec104-simulator --no-stream
 --memory="256m" --cpus="0.5"
 ```
 
-**Q7: ECR镜像拉取失败怎么办？**
+**Q7: 本地镜像和ECR镜像有什么区别？**
+
+| 特性 | 本地镜像 | ECR镜像 |
+|------|----------|---------|
+| 部署速度 | 快（无需下载） | 慢（需要拉取） |
+| 多设备部署 | 需要每台设备构建 | 统一拉取 |
+| 版本管理 | 手动管理 | 自动化 |
+| 网络要求 | 无 | 需要 |
+
+**Q8: 如何推送镜像到ECR？**
+
+参考下面的"ECR部署方案"章节。
+
+**Q9: ECR镜像拉取失败怎么办？**
 
 检查：
 - Token Exchange Role是否有ECR权限
 - 网络连接是否正常
 - 镜像URI是否正确
 
-**Q8: 如何查看容器内的文件？**
+**Q10: 如何查看容器内的文件？**
 
 ```bash
 docker exec iec104-simulator ls -la /app
 docker exec iec104-simulator cat /app/config.json
 ```
+
+## ECR部署方案（可选）
+
+### 为什么使用ECR？
+
+**本地镜像方案**（当前使用）：
+- ✅ 无需网络，部署快速
+- ❌ 需要在每个设备上构建
+- ❌ 无法集中管理版本
+
+**ECR镜像方案**：
+- ✅ 集中管理，版本控制
+- ✅ 多设备统一部署
+- ✅ 自动拉取最新版本
+- ❌ 需要网络连接和ECR权限
+
+### 前置条件：IAM权限配置
+
+#### 1. 开发者权限（推送镜像）
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:CreateRepository",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+#### 2. Greengrass Token Exchange Role（拉取镜像）
+
+在Greengrass设备的Token Exchange Role中添加：
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+### 部署步骤
+
+#### 步骤1: 推送镜像到ECR
+
+```bash
+cd /home/participant/workshop/lab3-iec104-simulator
+
+# 执行推送脚本
+./push-to-ecr.sh
+```
+
+脚本会自动：
+- 创建ECR仓库（如果不存在）
+- 登录ECR
+- 标记镜像
+- 推送镜像
+- 验证推送结果
+
+#### 步骤2: 使用ECR Recipe部署
+
+```bash
+# 获取账号ID和镜像URI
+export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+export AWS_REGION="ap-northeast-1"
+export ECR_IMAGE_URI="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/iec104-simulator:1.0.3"
+
+# 部署
+./deploy.sh
+```
+
+deploy.sh会自动使用ECR镜像URI。
+
+#### 步骤3: 验证部署
+
+```bash
+# 查看容器状态
+sudo docker ps | grep iec104-simulator
+
+# 查看容器日志
+sudo docker logs iec104-simulator
+
+# 测试连接
+nc -zv localhost 2404
+```
+
+### ECR故障排查
+
+#### 问题1: ECR登录失败
+
+```
+Error: Cannot perform an interactive login from a non TTY device
+```
+
+**解决**：确保有 `ecr:GetAuthorizationToken` 权限
+
+#### 问题2: 镜像拉取失败
+
+```
+Error response from daemon: pull access denied
+```
+
+**解决**：
+1. 检查Token Exchange Role是否有ECR读取权限
+2. 确认镜像URI正确
+3. 检查网络连接
+
+```bash
+# 手动测试ECR访问
+aws ecr describe-repositories --region ${AWS_REGION}
+
+# 手动拉取镜像测试
+docker pull ${ECR_IMAGE_URI}
+```
+
+#### 问题3: 容器启动冲突
+
+```
+docker: Error response from daemon: Conflict
+```
+
+**解决**：停止并删除旧容器
+```bash
+docker stop iec104-simulator
+docker rm iec104-simulator
+```
+
+### ECR最佳实践
+
+1. **版本标签管理**
+   ```bash
+   # 使用语义化版本
+   docker tag iec104-simulator:latest ${ECR_URI}:1.0.3
+   docker tag iec104-simulator:latest ${ECR_URI}:latest
+   ```
+
+2. **生命周期策略**（自动清理旧镜像）
+   ```json
+   {
+     "rules": [{
+       "rulePriority": 1,
+       "description": "Keep last 10 images",
+       "selection": {
+         "tagStatus": "any",
+         "countType": "imageCountMoreThan",
+         "countNumber": 10
+       },
+       "action": { "type": "expire" }
+     }]
+   }
+   ```
+
+3. **镜像扫描**
+   ```bash
+   aws ecr start-image-scan \
+     --repository-name iec104-simulator \
+     --image-id imageTag=1.0.3
+   ```
 
 ## 故障排查清单
 
