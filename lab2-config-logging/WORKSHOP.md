@@ -175,11 +175,11 @@ lab2-config-logging/
 #### 1.1 进入实验目录
 
 ```bash
-cd /home/ubuntu/iec104-greengrass/workshop/lab2-config-logging
+cd /home/ubuntu/greengrass-iec104-cpp-workshop/lab2-config-logging
 ```
 
 #### 1.2 设置环境变量
-
+**提示：一定要仔细确认**
 ```bash
 # 设置 AWS 区域
 export AWS_REGION="cn-north-1"
@@ -188,13 +188,13 @@ export AWS_REGION="cn-north-1"
 export COMPONENT_BUCKET="iec104-greengrass-components-<your-timestamp>"
 
 # 设置 Greengrass Thing 名称
-export THING_NAME="GreengrassQuickStartCore-19be3781cbc"
+export THING_NAME="MyGreengrassCore-sean"
 
 # 获取账户 ID
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 # 设置组件版本
-export VERSION="1.0.1"
+export VERSION="1.0.0"
 export COMPONENT_NAME="com.example.ConfigDemo"
 ```
 
@@ -429,15 +429,15 @@ Run:
 
 **正确的 ZIP 结构**:
 ```
-com.example.ConfigDemo-1.0.1.zip
+com.example.ConfigDemo-1.0.0.zip
 └── config_demo/              ← 直接包含内容目录
     └── config_demo           ← 二进制文件
 ```
 
 **错误的 ZIP 结构** (会导致路径不匹配):
 ```
-com.example.ConfigDemo-1.0.1.zip
-└── com.example.ConfigDemo-1.0.1/    ← 多余的顶层目录
+com.example.ConfigDemo-1.0.0.zip
+└── com.example.ConfigDemo-1.0.0/    ← 多余的顶层目录
     └── config_demo/
         └── config_demo
 ```
@@ -446,15 +446,15 @@ com.example.ConfigDemo-1.0.1.zip
 ```
 /greengrass/v2/packages/artifacts-unarchived/
 └── com.example.ConfigDemo/
-    └── 1.0.1/
-        └── com.example.ConfigDemo-1.0.1/    ← ZIP 文件名作为目录
+    └── 1.0.0/
+        └── com.example.ConfigDemo-1.0.0/    ← ZIP 文件名作为目录
             └── config_demo/                  ← ZIP 内容
                 └── config_demo               ← 二进制文件
 ```
 
 因此 Recipe 中的路径应该是:
 ```
-{artifacts:decompressedPath}/com.example.ConfigDemo-1.0.1/config_demo/config_demo
+{artifacts:decompressedPath}/com.example.ConfigDemo-1.0.0/config_demo/config_demo
 ```
 
 #### 5.3 执行打包
@@ -480,7 +480,7 @@ unzip -l artifacts/com.example.ConfigDemo-${VERSION}.zip
 
 **预期输出**:
 ```
-Archive:  artifacts/com.example.ConfigDemo-1.0.1.zip
+Archive:  artifacts/com.example.ConfigDemo-1.0.0.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
         0  2026-01-22 04:19   config_demo/
@@ -490,7 +490,7 @@ Archive:  artifacts/com.example.ConfigDemo-1.0.1.zip
 ```
 
 ✅ **正确**: 直接是 `config_demo/` 目录  
-❌ **错误**: 如果看到 `com.example.ConfigDemo-1.0.1/config_demo/`
+❌ **错误**: 如果看到 `com.example.ConfigDemo-1.0.0/config_demo/`
 
 #### 5.5 上传到 S3
 
@@ -516,8 +516,8 @@ aws s3 ls s3://${COMPONENT_BUCKET}/com.example.ConfigDemo/${VERSION}/ \
 
 1. 打开 [S3 控制台](https://console.amazonaws.cn/s3/)
 2. 点击你的存储桶
-3. 创建文件夹: `com.example.ConfigDemo/1.0.1/`
-4. 上传 `artifacts/com.example.ConfigDemo-1.0.1.zip`
+3. 创建文件夹: `com.example.ConfigDemo/1.0.0/`
+4. 上传 `artifacts/com.example.ConfigDemo-1.0.0.zip`
 
 ![上传到 S3](images/s3-upload-configdemo.png)
 *截图位置: 上传 ConfigDemo 组件*
@@ -551,9 +551,9 @@ aws greengrassv2 create-component-version \
 **预期输出**:
 ```json
 {
-    "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.ConfigDemo:versions:1.0.1",
+    "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.ConfigDemo:versions:1.0.0",
     "componentName": "com.example.ConfigDemo",
-    "componentVersion": "1.0.1",
+    "componentVersion": "1.0.0",
     "creationTimestamp": "2026-01-22T04:22:00.000000+00:00",
     "status": {
         "componentState": "REQUESTED"
@@ -596,8 +596,7 @@ aws greengrassv2 create-deployment \
 **预期输出**:
 ```json
 {
-    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
-    "iotJobId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE22222"
+    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111"
 }
 ```
 
@@ -612,7 +611,7 @@ export DEPLOYMENT_ID="<your-deployment-id>"
 2. 点击 **Deploy** 按钮
 3. 选择 **Revise deployment**
 4. 添加组件: `com.example.ConfigDemo`
-5. 选择版本: `1.0.1`
+5. 选择版本: `1.0.0`
 6. 配置组件:
 ```json
 {
@@ -679,9 +678,25 @@ sudo /greengrass/v2/bin/greengrass-cli component list | grep -A 3 ConfigDemo
 **预期输出**:
 ```
 Component Name: com.example.ConfigDemo
-    Version: 1.0.1
+    Version: 1.0.0
     State: RUNNING
     Configuration: {"message":"Lab 2 is working!","interval":5,"logLevel":"DEBUG"}
+```
+
+**替代方案 (如果未部署 CLI)**:
+
+```bash
+# 方法 1: 查看日志确认运行状态
+sudo tail -20 /greengrass/v2/logs/com.example.ConfigDemo.log
+
+# 方法 2: 查看进程
+ps aux | grep ConfigDemo | grep -v grep
+
+# 方法 3: 使用 AWS CLI
+aws greengrassv2 list-installed-components \
+  --core-device-thing-name ${THING_NAME} \
+  --region ${AWS_REGION} \
+  --query 'installedComponents[?componentName==`com.example.ConfigDemo`]'
 ```
 
 #### 6.5 验证文件路径
@@ -697,8 +712,8 @@ sudo find /greengrass/v2/packages/artifacts-unarchived/com.example.ConfigDemo/${
 
 **预期路径**:
 ```
-/greengrass/v2/packages/artifacts-unarchived/com.example.ConfigDemo/1.0.1/
-  com.example.ConfigDemo-1.0.1/config_demo/config_demo
+/greengrass/v2/packages/artifacts-unarchived/com.example.ConfigDemo/1.0.0/
+  com.example.ConfigDemo-1.0.0/config_demo/config_demo
 ```
 
 #### 6.6 配置更新实验

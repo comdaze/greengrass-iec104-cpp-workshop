@@ -33,6 +33,72 @@ cmake --version
 g++ --version
 ```
 
+### 部署 Greengrass CLI (可选但推荐)
+
+Greengrass CLI 是一个用于本地管理组件的工具,**默认不会自动安装**。
+
+#### 检查是否已安装
+
+```bash
+sudo /greengrass/v2/bin/greengrass-cli --version
+```
+
+如果提示 `command not found`,需要部署 CLI 组件:
+
+#### 方法 1: 使用 AWS CLI 部署
+
+```bash
+# 设置环境变量(如果还没有)
+export AWS_REGION="cn-north-1"
+export THING_NAME="GreengrassQuickStartCore-19be3781cbc"  # 替换为你的 Thing 名称
+export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+# 部署 CLI 组件
+aws greengrassv2 create-deployment \
+  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --deployment-name "Deploy-CLI-$(date +%s)" \
+  --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.12.0"
+    }
+  }' \
+  --region ${AWS_REGION}
+```
+
+#### 方法 2: 使用 AWS 控制台部署
+
+1. 打开 [AWS IoT Greengrass 控制台](https://console.aws.amazon.com/iot/home#/greengrass/v2/cores)
+2. 选择你的 Core device
+3. 点击 **Deploy**
+4. 选择 **Public components**
+5. 搜索并添加 `aws.greengrass.Cli`
+6. 选择版本 `2.12.0` (或最新版本)
+7. 点击 **Next** → **Deploy**
+
+#### 等待部署完成 (约 1-2 分钟)
+
+```bash
+# 验证安装
+sudo /greengrass/v2/bin/greengrass-cli component list
+```
+
+#### 如果不部署 CLI
+
+本 Workshop 中所有使用 `greengrass-cli` 的命令都提供了替代方案:
+
+```bash
+# 替代方案 1: 查看日志文件
+sudo tail -f /greengrass/v2/logs/com.example.HelloWorld.log
+
+# 替代方案 2: 查看所有组件日志
+sudo ls -lh /greengrass/v2/logs/
+
+# 替代方案 3: 使用 AWS CLI 查询部署状态
+aws greengrassv2 get-deployment \
+  --deployment-id <deployment-id> \
+  --region ${AWS_REGION}
+```
+
 ## 🏗️ 架构概览
 
 ### 整体架构
@@ -158,10 +224,10 @@ lab1-hello-world/
 #### 1.1 进入实验目录
 
 ```bash
-cd /home/ubuntu/iec104-greengrass/workshop/lab1-hello-world
+cd /home/ubuntu/greengrass-iec104-cpp-workshop/lab1-hello-world
 ```
 
-#### 1.2 设置环境变量
+#### 1.2 确认或者设置环境变量
 
 ```bash
 # 设置 AWS 区域
@@ -547,10 +613,10 @@ export DEPLOYMENT_ID="<your-deployment-id>"
 **使用 AWS 管理控制台**:
 
 1. 打开 [AWS IoT 控制台](https://console.amazonaws.cn/iot/)
-2. 左侧菜单: **Manage** → **Greengrass devices** → **Core devices**
-3. 点击你的 Core device 名称
+2. 左侧菜单: **Manage** → **组件** 
+3. 点击 **com.example.HelloWorld**
 4. 点击 **Deploy** 按钮
-5. 选择 **Revise deployment**
+5. 选择 **创建新的部署**,然后输入部署目标
 
 ![选择部署目标](images/deploy-target.png)
 *截图位置: 选择部署目标*
@@ -562,7 +628,7 @@ export DEPLOYMENT_ID="<your-deployment-id>"
 ![选择组件](images/deploy-select-component.png)
 *截图位置: 选择组件*
 
-9. 展开组件配置,输入:
+9. 组件配置,输入:
 ```json
 {
   "message": "Hello from Greengrass!",
@@ -649,8 +715,9 @@ sudo tail -f /greengrass/v2/logs/com.example.HelloWorld.log
 
 #### 8.3 检查组件状态
 
+**方法 1: 使用 Greengrass CLI (如果已部署)**
+
 ```bash
-# 使用 Greengrass CLI
 sudo /greengrass/v2/bin/greengrass-cli component list
 ```
 
@@ -664,6 +731,28 @@ Component Name: com.example.HelloWorld
     Version: 1.0.0
     State: RUNNING
     Configuration: {"message":"Hello from Greengrass!","interval":5}
+```
+
+**方法 2: 使用 AWS CLI (替代方案)**
+
+```bash
+# 查看部署详情
+aws greengrassv2 get-deployment \
+  --deployment-id ${DEPLOYMENT_ID} \
+  --region ${AWS_REGION}
+
+# 查看组件状态
+aws greengrassv2 list-installed-components \
+  --core-device-thing-name ${THING_NAME} \
+  --region ${AWS_REGION}
+```
+
+**方法 3: 查看日志文件 (最简单)**
+
+```bash
+# 如果日志文件存在且有输出,说明组件正在运行
+sudo ls -lh /greengrass/v2/logs/com.example.HelloWorld.log
+sudo tail -20 /greengrass/v2/logs/com.example.HelloWorld.log
 ```
 
 #### 8.4 检查进程状态
@@ -695,7 +784,7 @@ cat /tmp/config.json
 
 ---
 
-### 步骤 9: 动态更新配置
+### 步骤 9: 动态更新配置（可选）
 
 #### 9.1 理解配置更新机制
 

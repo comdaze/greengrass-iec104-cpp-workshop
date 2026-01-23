@@ -327,6 +327,40 @@ echo "export AWS_REGION=${AWS_REGION}" >> ~/.bashrc
 source ~/.bashrc
 ```
 
+### 步骤 5.5: 部署 Greengrass CLI (可选但推荐)
+
+Greengrass CLI 用于本地管理和调试组件,**默认不会自动安装**。
+
+#### 检查是否已安装
+
+```bash
+sudo /greengrass/v2/bin/greengrass-cli --version
+```
+
+#### 如果未安装,使用 AWS CLI 部署
+
+```bash
+# 设置 Thing 名称(替换为你的实际名称)
+export THING_NAME="GreengrassQuickStartCore-xxxxx"
+export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+# 部署 CLI 组件
+aws greengrassv2 create-deployment \
+  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --deployment-name "Deploy-CLI-$(date +%s)" \
+  --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.12.0"
+    }
+  }' \
+  --region ${AWS_REGION}
+
+# 等待 1-2 分钟后验证
+sudo /greengrass/v2/bin/greengrass-cli component list
+```
+
+**如果不部署 CLI**: 可以使用日志文件和 AWS CLI 作为替代方案(详见各 Lab 的 Workshop 向导)。
+
 ### 步骤 6: 部署组件
 
 ```bash
@@ -350,6 +384,8 @@ cd ../lab5-iot-integration
 
 ### 步骤 7: 验证部署
 
+**方法 1: 使用 Greengrass CLI (如果已部署)**
+
 ```bash
 # 检查组件状态
 sudo /greengrass/v2/bin/greengrass-cli component list
@@ -357,6 +393,20 @@ sudo /greengrass/v2/bin/greengrass-cli component list
 # 查看日志
 sudo tail -f /greengrass/v2/logs/com.example.IEC104Collector.log
 sudo tail -f /greengrass/v2/logs/com.example.IoTPublisher.log
+```
+
+**方法 2: 直接查看日志 (替代方案)**
+
+```bash
+# 查看所有组件日志
+sudo ls -lh /greengrass/v2/logs/
+
+# 查看特定组件日志
+sudo tail -f /greengrass/v2/logs/com.example.IEC104Collector.log
+sudo tail -f /greengrass/v2/logs/com.example.IoTPublisher.log
+
+# 查看进程
+ps aux | grep -E "IEC104|IoTPublisher" | grep -v grep
 ```
 
 ## 📖 Workshop 向导

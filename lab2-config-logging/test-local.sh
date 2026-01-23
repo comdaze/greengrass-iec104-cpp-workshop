@@ -3,8 +3,6 @@ set -e
 
 echo "Testing ConfigDemo component locally..."
 
-./build.sh
-
 cat > /tmp/test-config-demo.json << EOF
 {
   "message": "Testing Lab 2 locally!",
