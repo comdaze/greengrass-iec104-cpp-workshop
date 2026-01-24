@@ -9,7 +9,7 @@ ComponentConfiguration:
   DefaultConfiguration:
     # 替换为实际的ECR镜像URI
     # 格式: {account-id}.dkr.ecr.{region}.amazonaws.com/iec104-simulator:1.0.0
-    imageUri: "429058178429.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0"
+    imageUri: "IMAGE_URI_PLACEHOLDER"
     port: 2404
 
 Manifests:
