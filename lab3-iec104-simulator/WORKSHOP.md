@@ -62,7 +62,7 @@ sudo systemctl restart docker
 │  │  Amazon ECR (Elastic Container Registry)           │    │
 │  │                                                     │    │
 │  │  Repository: iec104-simulator                      │    │
-│  │  Image: xxx.dkr.ecr.cn-north-1.amazonaws.com.cn/  │    │
+│  │  Image: xxx.dkr.ecr.ap-northeast-1.amazonaws.com/  │    │
 │  │         iec104-simulator:1.0.0                     │    │
 │  └────────────────────────────────────────────────────┘    │
 │                              ▲                               │
@@ -233,7 +233,7 @@ cd /home/ubuntu/iec104-greengrass/workshop/lab3-iec104-simulator
 
 ```bash
 # 设置 AWS 区域
-export AWS_REGION="cn-north-1"
+export AWS_REGION="ap-northeast-1"
 
 # 设置镜像信息
 export IMAGE_NAME="iec104-simulator"
@@ -243,7 +243,7 @@ export IMAGE_TAG="1.0.0"
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 # 设置 ECR 仓库 URI
-export ECR_REPO="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com.cn/${IMAGE_NAME}"
+export ECR_REPO="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
 
 # 验证环境变量
 echo "AWS Region: ${AWS_REGION}"
@@ -560,12 +560,12 @@ AWS Account
 
 **ECR URI 格式**:
 ```
-<account-id>.dkr.ecr.<region>.amazonaws.com.cn/<repository-name>:<tag>
+<account-id>.dkr.ecr.<region>.amazonaws.com/<repository-name>:<tag>
 ```
 
 **示例**:
 ```
-123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator:1.0.0
+123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0
 ```
 
 #### 5.2 创建 ECR 仓库
@@ -585,10 +585,10 @@ aws ecr create-repository \
 ```json
 {
     "repository": {
-        "repositoryArn": "arn:aws-cn:ecr:cn-north-1:123456789012:repository/iec104-simulator",
+        "repositoryArn": "arn:aws:ecr:ap-northeast-1:123456789012:repository/iec104-simulator",
         "registryId": "123456789012",
         "repositoryName": "iec104-simulator",
-        "repositoryUri": "123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator",
+        "repositoryUri": "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator",
         "createdAt": "2026-01-23T10:00:00+00:00"
     }
 }
@@ -621,7 +621,7 @@ aws ecr describe-repositories \
 ----------------------------------------------------------------------------------
 |                           DescribeRepositories                                 |
 +-------------------+-----------------------------------------------------------+
-|  iec104-simulator |  123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator  |
+|  iec104-simulator |  123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator  |
 +-------------------+-----------------------------------------------------------+
 ```
 
@@ -672,7 +672,7 @@ aws ecr describe-repositories --region ${AWS_REGION}
 # 获取登录密码并登录
 aws ecr get-login-password --region ${AWS_REGION} | \
   docker login --username AWS --password-stdin \
-  ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com.cn
+  ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 ```
 
 **预期输出**:
@@ -698,7 +698,7 @@ docker images | grep iec104-simulator
 **预期输出**:
 ```
 iec104-simulator   1.0.0   a1b2c3d4e5f6   10 minutes ago   78.5MB
-123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator   1.0.0   a1b2c3d4e5f6   10 minutes ago   78.5MB
+123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator   1.0.0   a1b2c3d4e5f6   10 minutes ago   78.5MB
 ```
 
 #### 6.4 推送镜像
@@ -710,7 +710,7 @@ docker push ${ECR_REPO}:${IMAGE_TAG}
 
 **预期输出**:
 ```
-The push refers to repository [123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator]
+The push refers to repository [123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator]
 5f70bf18a086: Pushed
 e16c52e9c8e5: Pushed
 1.0.0: digest: sha256:abc123... size: 1234
@@ -810,7 +810,7 @@ ComponentDescription: "IEC104 Simulator running in Docker container"
 ```yaml
 ComponentConfiguration:
   DefaultConfiguration:
-    ImageUri: "123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator:1.0.0"
+    ImageUri: "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0"
     ContainerName: "iec104-simulator"
     HostPort: "2404"
 ```
@@ -945,7 +945,7 @@ grep "ImageUri" recipe-updated.yaml
 
 **预期输出**:
 ```yaml
-ImageUri: "123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator:1.0.0"
+ImageUri: "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0"
 ```
 
 #### 7.5 转换 Recipe 为 JSON
@@ -984,7 +984,7 @@ aws greengrassv2 create-component-version \
 **预期输出**:
 ```json
 {
-    "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.IEC104SimulatorDocker:versions:1.0.0",
+    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.IEC104SimulatorDocker:versions:1.0.0",
     "componentName": "com.example.IEC104SimulatorDocker",
     "componentVersion": "1.0.0",
     "creationTimestamp": "2026-01-23T10:30:00.000000+00:00",
@@ -1017,7 +1017,7 @@ export COMPONENT_VERSION="1.0.0"
 
 # 创建部署
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Simulator-Docker-$(date +%s)" \
   --components "{
     \"com.example.IEC104SimulatorDocker\": {
@@ -1053,7 +1053,7 @@ export DEPLOYMENT_ID="<your-deployment-id>"
 6. 配置组件:
 ```json
 {
-  "ImageUri": "123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator:1.0.0",
+  "ImageUri": "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0",
   "ContainerName": "iec104-simulator",
   "HostPort": "2404"
 }
@@ -1136,7 +1136,7 @@ docker ps | grep iec104-simulator
 
 **预期输出**:
 ```
-a1b2c3d4e5f6   123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator:1.0.0   "/usr/local/bin/iec1…"   2 minutes ago   Up 2 minutes   iec104-simulator
+a1b2c3d4e5f6   123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0   "/usr/local/bin/iec1…"   2 minutes ago   Up 2 minutes   iec104-simulator
 ```
 
 ```bash
@@ -1393,7 +1393,7 @@ denied: Your authorization token has expired. Reauthenticate and try again.
 ```bash
 aws ecr get-login-password --region ${AWS_REGION} | \
   docker login --username AWS --password-stdin \
-  ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com.cn
+  ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 ```
 
 2. 检查 IAM 权限

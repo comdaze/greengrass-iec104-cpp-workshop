@@ -30,7 +30,7 @@ sudo usermod -aG docker ggc_user
 sudo usermod -aG docker ubuntu
 
 # 检查ECR访问权限
-aws ecr describe-repositories --region cn-north-1
+aws ecr describe-repositories --region ap-northeast-1
 ```
 
 ## 常见问题和解决方案（实战经验）
@@ -225,7 +225,7 @@ aws iam attach-role-policy --role-name xxx --policy-arn xxx
 sleep 30  # 等待策略生效
 
 # 或者测试权限直到成功
-while ! aws ecr describe-repositories --region cn-north-1 2>/dev/null; do
+while ! aws ecr describe-repositories --region ap-northeast-1 2>/dev/null; do
   echo "Waiting for IAM policy to take effect..."
   sleep 10
 done
@@ -318,7 +318,7 @@ newgrp docker
 │  │  Amazon ECR (Elastic Container Registry)           │    │
 │  │                                                     │    │
 │  │  Repository: iec104-simulator                      │    │
-│  │  Image: xxx.dkr.ecr.cn-north-1.amazonaws.com.cn/  │    │
+│  │  Image: xxx.dkr.ecr.ap-northeast-1.amazonaws.com/  │    │
 │  │         iec104-simulator:1.0.0                     │    │
 │  └────────────────────────────────────────────────────┘    │
 │                              ▲                               │
@@ -686,11 +686,11 @@ docker rm iec104-simulator-test
 ### 4.2 配置环境变量
 
 ```bash
-export AWS_REGION="cn-north-1"
+export AWS_REGION="ap-northeast-1"
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export IMAGE_NAME="iec104-simulator"
 export IMAGE_TAG="1.0.0"
-export REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com.cn"
+export REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
 echo "Registry: ${REGISTRY}"
 echo "Full Image URI: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
@@ -728,10 +728,10 @@ aws ecr describe-repositories \
 {
     "repositories": [
         {
-            "repositoryArn": "arn:aws-cn:ecr:cn-north-1:123456789012:repository/iec104-simulator",
+            "repositoryArn": "arn:aws:ecr:ap-northeast-1:123456789012:repository/iec104-simulator",
             "registryId": "123456789012",
             "repositoryName": "iec104-simulator",
-            "repositoryUri": "123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator",
+            "repositoryUri": "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator",
             "createdAt": "2026-01-22T03:30:00+00:00"
         }
     ]
@@ -750,7 +750,7 @@ docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
 
 **预期输出**：
 ```
-The push refers to repository [123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator]
+The push refers to repository [123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator]
 5f70bf18a086: Pushed
 e16c52083d88: Pushed
 1.0.0: digest: sha256:abc123... size: 1234
@@ -861,7 +861,7 @@ cat recipe-docker.yaml
 ```yaml
 ComponentConfiguration:
   DefaultConfiguration:
-    imageUri: "123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator:1.0.0"
+    imageUri: "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0"
     port: 2404
 ```
 
@@ -944,7 +944,7 @@ export THING_NAME="GreengrassQuickStartCore-19be3781cbc"
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Simulator-Docker-$(date +%s)" \
   --components "{
     \"com.example.IEC104SimulatorDocker\": {
@@ -969,7 +969,7 @@ sudo tail -f /greengrass/v2/logs/com.example.IEC104SimulatorDocker.log
 **预期输出**：
 ```
 [INFO] Starting IEC104 Simulator Docker container
-[INFO] Image: 123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/iec104-simulator:1.0.0
+[INFO] Image: 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0
 [INFO] Port: 2404
 [INFO] IEC104 Simulator container started
 ```
@@ -1165,7 +1165,7 @@ docker push ${REGISTRY}/${IMAGE_NAME}:1.0.1
 ```bash
 # 更新配置，使用新镜像版本
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Simulator-Update-$(date +%s)" \
   --components "{
     \"com.example.IEC104SimulatorDocker\": {
@@ -1183,7 +1183,7 @@ aws greengrassv2 create-deployment \
 ```bash
 # 回滚到1.0.0版本
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Simulator-Rollback-$(date +%s)" \
   --components "{
     \"com.example.IEC104SimulatorDocker\": {

@@ -49,13 +49,13 @@ sudo /greengrass/v2/bin/greengrass-cli --version
 
 ```bash
 # 设置环境变量(如果还没有)
-export AWS_REGION="cn-north-1"
+export AWS_REGION="ap-northeast-1"
 export THING_NAME="GreengrassQuickStartCore-19be3781cbc"  # 替换为你的 Thing 名称
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 # 部署 CLI 组件
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "Deploy-CLI-$(date +%s)" \
   --components '{
     "aws.greengrass.Cli": {
@@ -231,7 +231,7 @@ cd /home/ubuntu/greengrass-iec104-cpp-workshop/lab1-hello-world
 
 ```bash
 # 设置 AWS 区域
-export AWS_REGION="cn-north-1"  # 根据你的区域修改
+export AWS_REGION="ap-northeast-1"  # 根据你的区域修改
 
 # 设置 S3 存储桶名称(如果还没有)
 export COMPONENT_BUCKET="iec104-greengrass-components-$(date +%s)"
@@ -405,7 +405,7 @@ aws s3 ls --region ${AWS_REGION} | grep ${COMPONENT_BUCKET}
       "Action": [
         "s3:GetObject"
       ],
-      "Resource": "arn:aws-cn:s3:::${COMPONENT_BUCKET}/*"
+      "Resource": "arn:aws:s3:::${COMPONENT_BUCKET}/*"
     }
   ]
 }
@@ -502,7 +502,7 @@ aws greengrassv2 create-component-version \
 **预期输出**:
 ```json
 {
-    "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.HelloWorld:versions:1.0.0",
+    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.HelloWorld:versions:1.0.0",
     "componentName": "com.example.HelloWorld",
     "componentVersion": "1.0.0",
     "creationTimestamp": "2026-01-22T02:00:00.000000+00:00",
@@ -531,7 +531,7 @@ aws greengrassv2 create-component-version \
 ```bash
 # 列出组件版本
 aws greengrassv2 list-component-versions \
-  --arn "arn:aws-cn:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld" \
+  --arn "arn:aws:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld" \
   --region ${AWS_REGION}
 ```
 
@@ -577,7 +577,7 @@ AWS Cloud                          Greengrass Device
 ```bash
 # 创建部署
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Lab1-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -814,7 +814,7 @@ cat /tmp/config.json
 ```bash
 # 创建配置更新部署
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Config-Update-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -894,7 +894,7 @@ cat /tmp/config.json
 ```bash
 # 重置配置
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Reset-Default-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -923,7 +923,7 @@ aws greengrassv2 create-deployment \
 ```bash
 # 移除组件
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "Remove-HelloWorld-$(date +%s)" \
   --components '{}' \
   --region ${AWS_REGION}
@@ -942,7 +942,7 @@ aws greengrassv2 create-deployment \
 ```bash
 # 删除组件版本
 aws greengrassv2 delete-component \
-  --arn "arn:aws-cn:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld:versions:1.0.0" \
+  --arn "arn:aws:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld:versions:1.0.0" \
   --region ${AWS_REGION}
 ```
 
@@ -1088,7 +1088,7 @@ aws s3 ls s3://${COMPONENT_BUCKET}/com.example.HelloWorld/1.0.0/
 
 ```bash
 aws greengrassv2 list-component-versions \
-  --arn "arn:aws-cn:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld" \
+  --arn "arn:aws:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld" \
   --region ${AWS_REGION}
 ```
 
@@ -1119,7 +1119,7 @@ sudo grep "shell-runner-start" /greengrass/v2/logs/greengrass.log | grep HelloWo
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thinggroup/MyDeviceGroup" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thinggroup/MyDeviceGroup" \
   --deployment-name "HelloWorld-Group-Deployment" \
   --components '...' \
   --region ${AWS_REGION}

@@ -42,7 +42,7 @@ aws logs describe-log-groups --region ${AWS_REGION} --max-items 1
 │  │              CloudWatch Logs                            │    │
 │  │  ┌──────────────────────────────────────────────────┐  │    │
 │  │  │  Log Group: /aws/greengrass/UserComponent/       │  │    │
-│  │  │             cn-north-1/com.example.ConfigDemo    │  │    │
+│  │  │             ap-northeast-1/com.example.ConfigDemo    │  │    │
 │  │  │                                                   │  │    │
 │  │  │  Log Streams:                                    │  │    │
 │  │  │  - GreengrassQuickStartCore-xxx_2026_01_22      │  │    │
@@ -87,39 +87,7 @@ aws logs describe-log-groups --region ${AWS_REGION} --max-items 1
 
 ### 核心概念
 
-#### 1. 日志级别 (Log Level)
-
-| 级别 | 数值 | 用途 | 示例 |
-|------|------|------|------|
-| **DEBUG** | 0 | 详细调试信息 | 循环迭代、变量值 |
-| **INFO** | 1 | 一般信息 | 组件启动、正常操作 |
-| **WARN** | 2 | 警告信息 | 阈值达到、潜在问题 |
-| **ERROR** | 3 | 错误信息 | 异常、失败操作 |
-
-**日志过滤机制**:
-- 设置级别为 INFO: 只显示 INFO、WARN、ERROR
-- 设置级别为 WARN: 只显示 WARN、ERROR
-- 设置级别为 DEBUG: 显示所有日志
-
-#### 2. Logger 类设计
-
-```
-Logger 类
-├── 日志级别管理
-│   └── 过滤低于当前级别的日志
-├── 双输出通道
-│   ├── 控制台输出 (stdout)
-│   └── 文件输出
-├── 时间戳格式化
-│   └── [YYYY-MM-DD HH:MM:SS]
-└── 便捷方法
-    ├── debug()
-    ├── info()
-    ├── warn()
-    └── error()
-```
-
-#### 3. Greengrass 日志管理
+#### 1. Greengrass 日志管理
 
 ```
 组件输出 (stdout/stderr)
@@ -182,10 +150,10 @@ cd /home/ubuntu/greengrass-iec104-cpp-workshop/lab2-config-logging
 **提示：一定要仔细确认**
 ```bash
 # 设置 AWS 区域
-export AWS_REGION="cn-north-1"
+export AWS_REGION="ap-northeast-1"
 
 # 使用之前创建的 S3 存储桶
-export COMPONENT_BUCKET="iec104-greengrass-components-<your-timestamp>"
+export COMPONENT_BUCKET="iec104-components-1769164857"
 
 # 设置 Greengrass Thing 名称
 export THING_NAME="MyGreengrassCore-sean"
@@ -512,15 +480,6 @@ aws s3 ls s3://${COMPONENT_BUCKET}/com.example.ConfigDemo/${VERSION}/ \
 2026-01-22 04:20:00     132928 com.example.ConfigDemo-1.0.1.zip
 ```
 
-**使用 AWS 管理控制台**:
-
-1. 打开 [S3 控制台](https://console.amazonaws.cn/s3/)
-2. 点击你的存储桶
-3. 创建文件夹: `com.example.ConfigDemo/1.0.0/`
-4. 上传 `artifacts/com.example.ConfigDemo-1.0.0.zip`
-
-![上传到 S3](images/s3-upload-configdemo.png)
-*截图位置: 上传 ConfigDemo 组件*
 
 #### 5.6 更新 Recipe 中的 S3 路径
 
@@ -551,7 +510,7 @@ aws greengrassv2 create-component-version \
 **预期输出**:
 ```json
 {
-    "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.ConfigDemo:versions:1.0.0",
+    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.ConfigDemo:versions:1.0.0",
     "componentName": "com.example.ConfigDemo",
     "componentVersion": "1.0.0",
     "creationTimestamp": "2026-01-22T04:22:00.000000+00:00",
@@ -561,17 +520,6 @@ aws greengrassv2 create-component-version \
 }
 ```
 
-**使用 AWS 管理控制台**:
-
-1. 打开 [AWS IoT 控制台](https://console.amazonaws.cn/iot/)
-2. 左侧菜单: **Manage** → **Greengrass devices** → **Components**
-3. 点击 **Create component**
-4. 选择 **Enter recipe as JSON**
-5. 粘贴 `artifacts/recipe-updated.json` 的内容
-6. 点击 **Create component**
-
-![创建 ConfigDemo 组件](images/create-configdemo.png)
-*截图位置: 创建组件界面*
 
 #### 6.2 部署组件
 
@@ -580,7 +528,7 @@ aws greengrassv2 create-component-version \
 ```bash
 # 创建部署
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Lab2-$(date +%s)" \
   --components '{
     "com.example.ConfigDemo": {
@@ -605,26 +553,6 @@ aws greengrassv2 create-deployment \
 export DEPLOYMENT_ID="<your-deployment-id>"
 ```
 
-**使用 AWS 管理控制台**:
-
-1. 在 **Core devices** 页面,点击你的设备
-2. 点击 **Deploy** 按钮
-3. 选择 **Revise deployment**
-4. 添加组件: `com.example.ConfigDemo`
-5. 选择版本: `1.0.0`
-6. 配置组件:
-```json
-{
-  "message": "Lab 2 is working!",
-  "interval": 5,
-  "logLevel": "DEBUG"
-}
-```
-7. 点击 **Deploy**
-
-![部署 ConfigDemo](images/deploy-configdemo.png)
-*截图位置: 部署配置界面*
-
 #### 6.3 监控部署状态
 
 **使用 AWS CLI**:
@@ -645,14 +573,6 @@ watch -n 5 "aws greengrassv2 get-deployment \
   --output text"
 ```
 
-**使用 AWS 管理控制台**:
-
-1. 在设备详情页面
-2. 点击 **Deployments** 标签
-3. 查看最新部署状态
-
-![部署状态](images/deployment-status-configdemo.png)
-*截图位置: 部署状态监控*
 
 #### 6.4 验证组件运行
 
@@ -716,13 +636,13 @@ sudo find /greengrass/v2/packages/artifacts-unarchived/com.example.ConfigDemo/${
   com.example.ConfigDemo-1.0.0/config_demo/config_demo
 ```
 
-#### 6.6 配置更新实验
+#### 6.6 配置更新实验（可选）
 
 **实验 1: 修改日志级别为 WARN**
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-LogLevel-WARN-$(date +%s)" \
   --components '{
     "com.example.ConfigDemo": {
@@ -748,7 +668,7 @@ sudo tail -f /greengrass/v2/logs/com.example.ConfigDemo.log
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Interval-10s-$(date +%s)" \
   --components '{
     "com.example.ConfigDemo": {
@@ -848,7 +768,7 @@ LogManager 需要权限上传日志到 CloudWatch:
         "logs:PutLogEvents",
         "logs:DescribeLogStreams"
       ],
-      "Resource": "arn:aws-cn:logs:*:*:log-group:/aws/greengrass/*"
+      "Resource": "arn:aws:logs:*:*:log-group:/aws/greengrass/*"
     }
   ]
 }
@@ -889,9 +809,12 @@ sudo /greengrass/v2/bin/greengrass-cli component list | grep Nucleus
 ```bash
 # 创建部署 (同时部署 ConfigDemo 和 LogManager)
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "Lab2-ConfigDemo-with-LogManager-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "aws.greengrass.LogManager": {
       "componentVersion": "2.3.11",
       "configurationUpdate": {
@@ -914,36 +837,6 @@ aws greengrassv2 create-deployment \
 - 本地日志限制: 10MB
 - 上传后保留本地日志
 
-**使用 AWS 管理控制台**:
-
-1. 在 Core device 详情页面,点击 **Deploy**
-2. 选择 **Revise deployment**
-3. 添加组件: `aws.greengrass.LogManager`
-   - 版本: `2.3.11`
-   - 配置:
-```json
-{
-  "logsUploaderConfiguration": {
-    "systemLogsConfiguration": {
-      "uploadToCloudWatch": "true",
-      "minimumLogLevel": "INFO"
-    },
-    "componentLogsConfigurationMap": {
-      "com.example.ConfigDemo": {
-        "minimumLogLevel": "DEBUG",
-        "diskSpaceLimit": "10",
-        "diskSpaceLimitUnit": "MB",
-        "deleteLogFileAfterCloudUpload": "false"
-      }
-    }
-  }
-}
-```
-4. 确保 `com.example.ConfigDemo` 也在部署中
-5. 点击 **Deploy**
-
-![部署 LogManager](images/deploy-logmanager.png)
-*截图位置: 部署 LogManager 配置*
 
 #### 8.4 验证部署状态
 
@@ -964,7 +857,7 @@ Component Name: com.example.ConfigDemo
 
 ```bash
 # 查看 LogManager 日志
-sudo tail -f /greengrass/v2/logs/aws.greengrass.LogManager.log
+sudo grep -i logmanager /greengrass/v2/logs/greengrass.log
 ```
 
 **预期看到**:
@@ -981,7 +874,7 @@ Successfully uploaded log stream...
 
 ```
 Log Group (日志组)
-  /aws/greengrass/UserComponent/cn-north-1/com.example.ConfigDemo
+  /aws/greengrass/UserComponent/ap-northeast-1/com.example.ConfigDemo
     ↓
   Log Stream (日志流)
     GreengrassQuickStartCore-xxx_2026_01_22
@@ -1013,8 +906,8 @@ aws logs describe-log-groups \
 -----------------------------------------------------------------
 |                      DescribeLogGroups                        |
 +---------------------------------------------------------------+
-|  /aws/greengrass/UserComponent/cn-north-1/com.example.ConfigDemo  |
-|  /aws/greengrass/GreengrassSystemComponent/cn-north-1/System  |
+|  /aws/greengrass/UserComponent/ap-northeast-1/com.example.ConfigDemo  |
+|  /aws/greengrass/GreengrassSystemComponent/ap-northeast-1/System  |
 +---------------------------------------------------------------+
 ```
 
@@ -1077,7 +970,7 @@ aws logs get-log-events \
 1. 打开 [CloudWatch 控制台](https://console.amazonaws.cn/cloudwatch/)
 2. 左侧菜单: **Logs** → **Log groups**
 3. 搜索: `/aws/greengrass/UserComponent`
-4. 点击: `/aws/greengrass/UserComponent/cn-north-1/com.example.ConfigDemo`
+4. 点击: `/aws/greengrass/UserComponent/ap-northeast-1/com.example.ConfigDemo`
 
 ![CloudWatch Log Groups](images/cloudwatch-log-groups.png)
 *截图位置: CloudWatch Log Groups 列表*
@@ -1109,7 +1002,7 @@ aws logs get-log-events \
 
 1. 在 CloudWatch 控制台
 2. 左侧菜单: **Logs** → **Logs Insights**
-3. 选择 Log Group: `/aws/greengrass/UserComponent/cn-north-1/com.example.ConfigDemo`
+3. 选择 Log Group: `/aws/greengrass/UserComponent/ap-northeast-1/com.example.ConfigDemo`
 4. 设置时间范围: 最近 1 小时
 
 ![CloudWatch Logs Insights](images/cloudwatch-logs-insights.png)
@@ -1343,7 +1236,7 @@ aws iot describe-role-alias \
 4. 检查网络连接
 ```bash
 # 测试到 CloudWatch Logs 的连接
-curl -I https://logs.${AWS_REGION}.amazonaws.com.cn
+curl -I https://logs.${AWS_REGION}.amazonaws.com
 ```
 
 ### Q2: 如何修改日志上传频率?

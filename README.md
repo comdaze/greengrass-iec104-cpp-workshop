@@ -73,7 +73,7 @@ aws configure
 
 # 6. 创建 S3 存储桶
 export COMPONENT_BUCKET=iec104-components-$(date +%s)
-export AWS_REGION=cn-north-1
+export AWS_REGION=ap-northeast-1
 aws s3 mb s3://${COMPONENT_BUCKET} --region ${AWS_REGION}
 ```
 
@@ -301,7 +301,7 @@ aws configure
 输入:
 - AWS Access Key ID
 - AWS Secret Access Key
-- Default region: `cn-north-1` (或你的区域)
+- Default region: `ap-northeast-1` (或你的区域)
 - Default output format: `json`
 
 ### 步骤 4: 安装 Greengrass Core
@@ -311,14 +311,14 @@ aws configure
 ```
 
 按提示输入:
-- AWS Region (默认: cn-north-1)
+- AWS Region (默认: ap-northeast-1)
 - Thing Name (默认: MyGreengrassCore)
 
 ### 步骤 5: 创建 S3 存储桶
 
 ```bash
 export COMPONENT_BUCKET=iec104-components-$(date +%s)
-export AWS_REGION=cn-north-1
+export AWS_REGION=ap-northeast-1
 aws s3 mb s3://${COMPONENT_BUCKET} --region ${AWS_REGION}
 
 # 保存到环境变量
@@ -346,7 +346,7 @@ export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 # 部署 CLI 组件
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "Deploy-CLI-$(date +%s)" \
   --components '{
     "aws.greengrass.Cli": {

@@ -1,7 +1,7 @@
 ---
 RecipeFormatVersion: "2020-01-25"
 ComponentName: "com.example.ConfigDemo"
-ComponentVersion: "1.0.3"
+ComponentVersion: "1.0.0"
 ComponentDescription: "Configuration and logging demonstration component"
 ComponentPublisher: "Workshop"
 
@@ -22,7 +22,7 @@ Manifests:
       Install:
         Script: |
           echo "Installing ConfigDemo component..."
-          chmod +x {artifacts:decompressedPath}/com.example.ConfigDemo-1.0.3/config_demo/config_demo
+          chmod +x {artifacts:decompressedPath}/com.example.ConfigDemo-1.0.0/config_demo/config_demo
           
       Run:
         Script: |
@@ -37,7 +37,7 @@ Manifests:
             "counterThreshold": {configuration:/counterThreshold}
           }
           EOF
-          {artifacts:decompressedPath}/com.example.ConfigDemo-1.0.3/config_demo/config_demo /tmp/config-demo.json
+          {artifacts:decompressedPath}/com.example.ConfigDemo-1.0.0/config_demo/config_demo /tmp/config-demo.json
         
       Shutdown:
         Script: |
@@ -45,5 +45,5 @@ Manifests:
           pkill -TERM config_demo || true
           
     Artifacts:
-      - URI: "s3://iec104-greengrass-components-1769054416/com.example.ConfigDemo/1.0.3/com.example.ConfigDemo-1.0.3.zip"
+      - URI: "s3://iec104-greengrass-components-1769054416/com.example.ConfigDemo/1.0.0/com.example.ConfigDemo-1.0.0.zip"
         Unarchive: ZIP

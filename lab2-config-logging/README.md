@@ -28,7 +28,7 @@
 │  │              CloudWatch Logs                            │    │
 │  │  ┌──────────────────────────────────────────────────┐  │    │
 │  │  │  Log Group: /aws/greengrass/UserComponent/       │  │    │
-│  │  │             cn-north-1/com.example.ConfigDemo    │  │    │
+│  │  │             ap-northeast-1/com.example.ConfigDemo    │  │    │
 │  │  │                                                   │  │    │
 │  │  │  Log Streams:                                    │  │    │
 │  │  │  - GreengrassQuickStartCore-xxx_2026_01_22      │  │    │
@@ -363,7 +363,7 @@ Archive:  com.example.ConfigDemo-1.0.3.zip
 ```bash
 # 使用之前创建的存储桶
 export COMPONENT_BUCKET="iec104-greengrass-components-1769054416"
-export AWS_REGION="cn-north-1"
+export AWS_REGION="ap-northeast-1"
 export VERSION="1.0.3"
 
 # 上传（注意路径包含版本号）
@@ -472,7 +472,7 @@ export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export VERSION="1.0.3"
 
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Lab2-v${VERSION}-$(date +%s)" \
   --components "{
     \"com.example.ConfigDemo\": {
@@ -534,7 +534,7 @@ sudo find /greengrass/v2/packages/artifacts-unarchived/com.example.ConfigDemo/${
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-LogLevel-WARN-$(date +%s)" \
   --components "{
     \"com.example.ConfigDemo\": {
@@ -555,7 +555,7 @@ aws greengrassv2 create-deployment \
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Interval-10s-$(date +%s)" \
   --components "{
     \"com.example.ConfigDemo\": {
@@ -655,7 +655,7 @@ sudo tail -f /greengrass/v2/logs/com.example.ConfigDemo.log
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Update-Message-$(date +%s)" \
   --components '{
     "com.example.ConfigDemo": {
@@ -672,7 +672,7 @@ aws greengrassv2 create-deployment \
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Threshold-$(date +%s)" \
   --components '{
     "com.example.ConfigDemo": {
@@ -791,7 +791,7 @@ cat > /tmp/cloudwatch-logs-policy.json << 'EOF'
         "logs:PutLogEvents",
         "logs:DescribeLogStreams"
       ],
-      "Resource": "arn:aws-cn:logs:*:*:log-group:/aws/greengrass/*"
+      "Resource": "arn:aws:logs:*:*:log-group:/aws/greengrass/*"
     }
   ]
 }
@@ -830,13 +830,13 @@ sudo cat /greengrass/v2/config/effectiveConfig.yaml | grep "componentVersion" | 
 ```bash
 # 设置环境变量
 export THING_NAME="GreengrassQuickStartCore-19be3781cbc"
-export AWS_REGION="cn-north-1"
+export AWS_REGION="ap-northeast-1"
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export VERSION="1.0.3"
 
 # 创建部署（同时部署ConfigDemo和LogManager）
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "Lab2-ConfigDemo-with-LogManager-v${VERSION}" \
   --components "{
     \"aws.greengrass.LogManager\": {
@@ -944,8 +944,8 @@ LogManager会自动创建以下日志组：
 ```
 
 **本实验的日志组**：
-- `/aws/greengrass/UserComponent/cn-north-1/com.example.ConfigDemo`
-- `/aws/greengrass/GreengrassSystemComponent/cn-north-1/System`
+- `/aws/greengrass/UserComponent/ap-northeast-1/com.example.ConfigDemo`
+- `/aws/greengrass/GreengrassSystemComponent/ap-northeast-1/System`
 
 ### 9.2 在控制台查看日志
 
@@ -1134,7 +1134,7 @@ sudo tail -100 /greengrass/v2/logs/greengrass.log | grep ERROR
 **A**: 
 ```bash
 aws greengrassv2 delete-component \
-  --arn "arn:aws-cn:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.ConfigDemo:versions:1.0.0" \
+  --arn "arn:aws:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.ConfigDemo:versions:1.0.0" \
   --region ${AWS_REGION}
 ```
 
@@ -1172,7 +1172,7 @@ zip -r ../com.example.ConfigDemo-1.0.3.zip .
 ### 9.1 打开CloudWatch Logs控制台
 
 ```
-https://console.amazonaws.cn/cloudwatch/home?region=cn-north-1#logsV2:log-groups
+https://console.amazonaws.cn/cloudwatch/home?region=ap-northeast-1#logsV2:log-groups
 ```
 
 ### 9.2 找到日志组
@@ -1184,7 +1184,7 @@ https://console.amazonaws.cn/cloudwatch/home?region=cn-north-1#logsV2:log-groups
 
 **示例**：
 ```
-/aws/greengrass/UserComponent/cn-north-1/com.example.ConfigDemo
+/aws/greengrass/UserComponent/ap-northeast-1/com.example.ConfigDemo
 ```
 
 **操作步骤**：
@@ -1272,7 +1272,7 @@ CloudWatch Console → Logs → Insights
 
 **选择日志组**：
 ```
-/aws/greengrass/UserComponent/cn-north-1/com.example.ConfigDemo
+/aws/greengrass/UserComponent/ap-northeast-1/com.example.ConfigDemo
 ```
 
 **查询示例**：
@@ -1376,7 +1376,7 @@ aws sns create-topic \
 
 # 订阅邮箱
 aws sns subscribe \
-  --topic-arn "arn:aws-cn:sns:${AWS_REGION}:${ACCOUNT_ID}:greengrass-log-alerts" \
+  --topic-arn "arn:aws:sns:${AWS_REGION}:${ACCOUNT_ID}:greengrass-log-alerts" \
   --protocol email \
   --notification-endpoint your-email@example.com \
   --region ${AWS_REGION}
@@ -1384,7 +1384,7 @@ aws sns subscribe \
 # 更新告警添加SNS通知
 aws cloudwatch put-metric-alarm \
   --alarm-name "ConfigDemo-HighErrorRate" \
-  --alarm-actions "arn:aws-cn:sns:${AWS_REGION}:${ACCOUNT_ID}:greengrass-log-alerts" \
+  --alarm-actions "arn:aws:sns:${AWS_REGION}:${ACCOUNT_ID}:greengrass-log-alerts" \
   --metric-name ErrorLogCount \
   --namespace Greengrass/ConfigDemo \
   --statistic Sum \

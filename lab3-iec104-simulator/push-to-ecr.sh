@@ -7,7 +7,7 @@
 set -e
 
 # 配置
-export AWS_REGION="${AWS_REGION:-cn-north-1}"
+export AWS_REGION="${AWS_REGION:-ap-northeast-1}"
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 export IMAGE_NAME="iec104-simulator"
 export IMAGE_TAG="1.0.0"

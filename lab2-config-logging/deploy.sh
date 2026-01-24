@@ -2,7 +2,7 @@
 set -e
 
 export COMPONENT_BUCKET="${COMPONENT_BUCKET:-iec104-greengrass-components-1769048317}"
-export AWS_REGION="${AWS_REGION:-cn-north-1}"
+export AWS_REGION="${AWS_REGION:-ap-northeast-1}"
 COMPONENT_NAME="com.example.ConfigDemo"
 COMPONENT_VERSION="1.0.0"
 

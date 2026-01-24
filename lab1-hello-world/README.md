@@ -702,7 +702,7 @@ ls -lh artifacts/
 
 ```bash
 # 设置环境变量
-export AWS_REGION="cn-north-1"  # 根据你的区域修改
+export AWS_REGION="ap-northeast-1"  # 根据你的区域修改
 export COMPONENT_BUCKET="iec104-greengrass-components-$(date +%s)"
 
 # 创建S3存储桶
@@ -759,7 +759,7 @@ cat > /tmp/s3-policy.json << EOF
       "Action": [
         "s3:GetObject"
       ],
-      "Resource": "arn:aws-cn:s3:::${COMPONENT_BUCKET}/*"
+      "Resource": "arn:aws:s3:::${COMPONENT_BUCKET}/*"
     }
   ]
 }
@@ -876,7 +876,7 @@ aws greengrassv2 create-component-version \
 **预期输出**：
 ```json
 {
-    "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.HelloWorld:versions:1.0.0",
+    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.HelloWorld:versions:1.0.0",
     "componentName": "com.example.HelloWorld",
     "componentVersion": "1.0.0",
     "creationTimestamp": "2026-01-22T02:00:00.000000+00:00",
@@ -901,7 +901,7 @@ aws greengrassv2 list-components --region ${AWS_REGION}
 
 # 方法2: 列出特定组件的所有版本
 aws greengrassv2 list-component-versions \
-  --arn "arn:aws-cn:greengrass:cn-north-1:$(aws sts get-caller-identity --query Account --output text):components:com.example.HelloWorld" \
+  --arn "arn:aws:greengrass:ap-northeast-1:$(aws sts get-caller-identity --query Account --output text):components:com.example.HelloWorld" \
   --region ${AWS_REGION}
 ```
 
@@ -912,7 +912,7 @@ aws greengrassv2 list-component-versions \
         {
             "componentName": "com.example.HelloWorld",
             "componentVersion": "1.0.0",
-            "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.HelloWorld:versions:1.0.0"
+            "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.HelloWorld:versions:1.0.0"
         }
     ]
 }
@@ -921,7 +921,7 @@ aws greengrassv2 list-component-versions \
 ```bash
 # 方法3: 查看特定组件版本详情
 aws greengrassv2 describe-component \
-  --arn "arn:aws-cn:greengrass:cn-north-1:$(aws sts get-caller-identity --query Account --output text):components:com.example.HelloWorld:versions:1.0.0" \
+  --arn "arn:aws:greengrass:ap-northeast-1:$(aws sts get-caller-identity --query Account --output text):components:com.example.HelloWorld:versions:1.0.0" \
   --region ${AWS_REGION}
 ```
 
@@ -1033,7 +1033,7 @@ aws iot describe-thing --thing-name ${THING_NAME} --region ${AWS_REGION}
     "defaultClientId": "GreengrassQuickStartCore-19be3781cbc",
     "thingName": "GreengrassQuickStartCore-19be3781cbc",
     "thingId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
-    "thingArn": "arn:aws-cn:iot:cn-north-1:123456789012:thing/GreengrassQuickStartCore-19be3781cbc",
+    "thingArn": "arn:aws:iot:ap-northeast-1:123456789012:thing/GreengrassQuickStartCore-19be3781cbc",
     "attributes": {},
     "version": 1
 }
@@ -1044,7 +1044,7 @@ aws iot describe-thing --thing-name ${THING_NAME} --region ${AWS_REGION}
 ```bash
 # 创建部署
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Lab1-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -1069,7 +1069,7 @@ aws greengrassv2 create-deployment \
 {
     "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
     "iotJobId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE22222",
-    "iotJobArn": "arn:aws-cn:iot:cn-north-1:123456789012:job/a1b2c3d4-5678-90ab-cdef-EXAMPLE22222"
+    "iotJobArn": "arn:aws:iot:ap-northeast-1:123456789012:job/a1b2c3d4-5678-90ab-cdef-EXAMPLE22222"
 }
 ```
 
@@ -1124,7 +1124,7 @@ watch -n 5 "aws greengrassv2 get-deployment \
 
 1. **打开AWS IoT Console**
    ```
-   https://console.amazonaws.cn/iot/home?region=cn-north-1
+   https://console.amazonaws.cn/iot/home?region=ap-northeast-1
    ```
 
 2. **导航到Greengrass组件**
@@ -1484,7 +1484,7 @@ sudo tail -f /greengrass/v2/logs/greengrass.log \
 ```bash
 # 创建配置更新部署
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Config-Update-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -1542,7 +1542,7 @@ cat /tmp/config.json
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Fast-Mode-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -1563,7 +1563,7 @@ aws greengrassv2 create-deployment \
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Slow-Mode-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -1587,7 +1587,7 @@ aws greengrassv2 create-deployment \
 ```bash
 # 只更新消息，保持间隔不变
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Partial-Update-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -1617,7 +1617,7 @@ cat /tmp/config.json
 
 ```bash
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Reset-Default-$(date +%s)" \
   --components '{
     "com.example.HelloWorld": {
@@ -1817,7 +1817,7 @@ aws greengrassv2 delete-component \
 **Q1: 如何查看组件的所有版本？**
 ```bash
 aws greengrassv2 list-component-versions \
-  --arn "arn:aws-cn:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld" \
+  --arn "arn:aws:greengrass:${AWS_REGION}:${ACCOUNT_ID}:components:com.example.HelloWorld" \
   --region ${AWS_REGION}
 ```
 

@@ -1,5 +1,5 @@
 {
-  "region": "cn-north-1",
+  "region": "ap-northeast-1",
   "topic": "wind-farm/data",
   "dataFile": "/tmp/iec104-data.json",
   "publishInterval": 5

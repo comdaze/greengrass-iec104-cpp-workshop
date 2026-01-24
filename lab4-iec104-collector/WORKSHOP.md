@@ -240,7 +240,7 @@ ls -la aws-iot-device-sdk-cpp-v2/
 
 ```bash
 # 设置 AWS 区域
-export AWS_REGION="cn-north-1"
+export AWS_REGION="ap-northeast-1"
 
 # 使用之前创建的 S3 存储桶
 export COMPONENT_BUCKET="iec104-greengrass-components-<your-timestamp>"
@@ -851,7 +851,7 @@ aws greengrassv2 create-component-version \
 **预期输出**:
 ```json
 {
-    "arn": "arn:aws-cn:greengrass:cn-north-1:123456789012:components:com.example.IEC104Collector:versions:1.0.1",
+    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.IEC104Collector:versions:1.0.1",
     "componentName": "com.example.IEC104Collector",
     "componentVersion": "1.0.1",
     "creationTimestamp": "2026-01-23T11:00:00.000000+00:00",
@@ -868,13 +868,13 @@ aws greengrassv2 create-component-version \
 ```bash
 # 创建部署 (同时部署 Simulator 和 Collector)
 aws greengrassv2 create-deployment \
-  --target-arn "arn:aws-cn:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
+  --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Full-Stack-$(date +%s)" \
   --components '{
     "com.example.IEC104SimulatorDocker": {
       "componentVersion": "1.0.0",
       "configurationUpdate": {
-        "merge": "{\"ImageUri\":\"'${ACCOUNT_ID}'.dkr.ecr.'${AWS_REGION}'.amazonaws.com.cn/iec104-simulator:1.0.0\",\"ContainerName\":\"iec104-simulator\",\"HostPort\":\"2404\"}"
+        "merge": "{\"ImageUri\":\"'${ACCOUNT_ID}'.dkr.ecr.'${AWS_REGION}'.amazonaws.com/iec104-simulator:1.0.0\",\"ContainerName\":\"iec104-simulator\",\"HostPort\":\"2404\"}"
       }
     },
     "com.example.IEC104Collector": {
