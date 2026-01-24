@@ -159,9 +159,52 @@ sudo mkdir -p /greengrass/v2
 sudo chown -R $CURRENT_USER:$CURRENT_USER /greengrass
 echo "Greengrass 目录创建完成"
 
-# 9. 下载 Workshop 代码 (如果还没有)
+# 9. 下载并编译 AWS IoT Device SDK
 echo ""
-echo "[9/11] 检查 Workshop 代码..."
+echo "[9/12] 下载并编译 AWS IoT Device SDK..."
+
+# 检查是否已安装
+if [ -f "/usr/local/lib/libGreengrassIpc-cpp.so" ] || [ -f "/usr/local/lib64/libGreengrassIpc-cpp.so" ]; then
+    echo "  ✓ AWS IoT SDK 已安装,跳过"
+else
+    SDK_BUILD_DIR="/tmp/aws-iot-device-sdk-cpp-v2"
+    
+    echo "  - 下载 AWS IoT Device SDK for C++ v2..."
+    if [ -d "$SDK_BUILD_DIR" ]; then
+        rm -rf "$SDK_BUILD_DIR"
+    fi
+    
+    git clone --recursive https://github.com/aws/aws-iot-device-sdk-cpp-v2.git "$SDK_BUILD_DIR"
+    
+    echo "  - 开始编译 (这可能需要 5-10 分钟)..."
+    cd "$SDK_BUILD_DIR"
+    mkdir -p build
+    cd build
+    
+    echo "  - 配置 CMake..."
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_DEPS=ON \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        > /dev/null 2>&1
+    
+    echo "  - 编译中 (使用 $(nproc) 个 CPU 核心)..."
+    make -j$(nproc) > /dev/null 2>&1
+    
+    echo "  - 安装到系统目录..."
+    sudo make install > /dev/null 2>&1
+    sudo ldconfig
+    
+    echo "  ✓ AWS IoT SDK 编译安装完成"
+    
+    # 清理临时文件
+    cd /tmp
+    rm -rf "$SDK_BUILD_DIR"
+fi
+
+# 10. 下载 Workshop 代码 (如果还没有)
+echo ""
+echo "[10/12] 检查 Workshop 代码..."
 WORKSHOP_DIR="/home/$CURRENT_USER/workshop"
 if [ ! -d "$WORKSHOP_DIR" ]; then
     echo "  Workshop 代码不存在,请手动克隆:"
@@ -194,9 +237,9 @@ else
     echo "  ✓ Git submodules 初始化完成"
 fi
 
-# 10. 复制 nlohmann/json 到各 lab 目录
+# 11. 复制 nlohmann/json 到各 lab 目录
 echo ""
-echo "[10/11] 复制依赖库到 lab 目录..."
+echo "[11/12] 复制依赖库到 lab 目录..."
 if [ -d "$WORKSHOP_DIR" ]; then
     # Lab 1
     if [ -d "$WORKSHOP_DIR/lab1-hello-world" ] && [ ! -d "$WORKSHOP_DIR/lab1-hello-world/nlohmann" ]; then
@@ -219,53 +262,9 @@ if [ -d "$WORKSHOP_DIR" ]; then
     echo "  ✓ 依赖库复制完成"
 fi
 
-# 10.5. 编译并安装 AWS IoT Device SDK (Lab4 和 Lab5 需要)
+# 12. 验证安装
 echo ""
-echo "[10.5/11] 编译并安装 AWS IoT Device SDK..."
-
-# 检查是否已安装
-if [ -f "/usr/local/lib/libGreengrassIpc-cpp.so" ] || [ -f "/usr/local/lib64/libGreengrassIpc-cpp.so" ]; then
-    echo "  ✓ AWS IoT SDK 已安装,跳过编译"
-else
-    echo "  - 开始编译 AWS IoT SDK (这可能需要 5-10 分钟)..."
-    
-    # 尝试从 lab4 或 lab5 编译
-    SDK_DIR=""
-    if [ -d "$WORKSHOP_DIR/lab4-iec104-collector/aws-iot-device-sdk-cpp-v2" ]; then
-        SDK_DIR="$WORKSHOP_DIR/lab4-iec104-collector/aws-iot-device-sdk-cpp-v2"
-    elif [ -d "$WORKSHOP_DIR/lab5-iot-integration/aws-iot-device-sdk-cpp-v2" ]; then
-        SDK_DIR="$WORKSHOP_DIR/lab5-iot-integration/aws-iot-device-sdk-cpp-v2"
-    fi
-    
-    if [ -n "$SDK_DIR" ]; then
-        cd "$SDK_DIR"
-        mkdir -p build
-        cd build
-        
-        echo "  - 配置 CMake..."
-        cmake .. \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_DEPS=ON \
-            -DCMAKE_INSTALL_PREFIX=/usr/local \
-            > /dev/null 2>&1
-        
-        echo "  - 编译中 (使用 $(nproc) 个 CPU 核心)..."
-        make -j$(nproc) > /dev/null 2>&1
-        
-        echo "  - 安装到系统目录..."
-        sudo make install > /dev/null 2>&1
-        sudo ldconfig
-        
-        echo "  ✓ AWS IoT SDK 编译安装完成"
-        cd "$WORKSHOP_DIR"
-    else
-        echo "  ⚠ AWS IoT SDK 源码未找到,将在 Lab4/Lab5 构建时处理"
-    fi
-fi
-
-# 11. 验证安装
-echo ""
-echo "[11/11] 验证安装..."
+echo "[12/12] 验证安装..."
 echo "=========================================="
 echo "系统工具:"
 echo "  ✓ GCC: $(gcc --version | head -n 1)"
