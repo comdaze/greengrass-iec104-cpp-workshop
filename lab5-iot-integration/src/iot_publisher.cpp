@@ -53,19 +53,6 @@ int main(int argc, char* argv[]) {
     
     std::cout << "[INFO] IoT Publisher starting..." << std::endl;
     
-    // 检查是否在 Greengrass 环境中运行
-    const char* ipcSocket = std::getenv("AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT");
-    bool isGreengrassEnv = (ipcSocket != nullptr);
-    
-    std::cout << "[INFO] Running mode: " << (isGreengrassEnv ? "Greengrass" : "Local Test") << std::endl;
-    
-    if (!isGreengrassEnv) {
-        std::cout << "[INFO] Local test mode - IPC not available" << std::endl;
-        std::cout << "[INFO] This component requires Greengrass IPC to function" << std::endl;
-        std::cout << "[INFO] Please deploy to Greengrass to test full functionality" << std::endl;
-        return 0;
-    }
-    
     std::string ipcTopic = "iec104/data";
     std::string iotTopic = "wind-farm/data";
     
@@ -95,7 +82,7 @@ int main(int argc, char* argv[]) {
     LifecycleHandler lifecycleHandler;
     auto connectionStatus = ipcClient.Connect(lifecycleHandler).get();
     if (!connectionStatus) {
-        std::cerr << "[ERROR] Failed to connect to IPC" << std::endl;
+        std::cerr << "[ERROR] Failed to connect to IPC: " << connectionStatus.StatusToString() << std::endl;
         return 1;
     }
     
