@@ -202,44 +202,35 @@ else
     rm -rf "$SDK_BUILD_DIR"
 fi
 
-# 10. 下载 Workshop 代码 (如果还没有)
+# 10. 初始化 Git Submodules (Lab4 和 Lab5)
 echo ""
-echo "[10/12] 检查 Workshop 代码..."
-WORKSHOP_DIR="/home/$CURRENT_USER/workshop"
-if [ ! -d "$WORKSHOP_DIR" ]; then
-    echo "  Workshop 代码不存在,请手动克隆:"
-    echo "  git clone <repository-url> $WORKSHOP_DIR"
-else
-    echo "  ✓ Workshop 代码已存在: $WORKSHOP_DIR"
-    
-    # 初始化 git submodules (AWS IoT SDK)
-    echo "  - 初始化 git submodules..."
-    cd $WORKSHOP_DIR
-    
-    # Lab 4 - IEC104 Collector
-    if [ -d "lab4-iec104-collector" ]; then
-        cd lab4-iec104-collector
-        if [ -f ".gitmodules" ]; then
-            git submodule update --init --recursive 2>/dev/null || echo "    (lab4 submodule 已初始化或不存在)"
-        fi
-        cd ..
+echo "[10/11] 初始化 Git Submodules..."
+WORKSHOP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$WORKSHOP_DIR"
+
+# Lab 4 - IEC104 Collector
+if [ -d "lab4-iec104-collector" ]; then
+    cd lab4-iec104-collector
+    if [ -f ".gitmodules" ]; then
+        git submodule update --init --recursive 2>/dev/null || echo "  (lab4 submodule 已初始化或不存在)"
     fi
-    
-    # Lab 5 - IoT Integration
-    if [ -d "lab5-iot-integration" ]; then
-        cd lab5-iot-integration
-        if [ -f ".gitmodules" ]; then
-            git submodule update --init --recursive 2>/dev/null || echo "    (lab5 submodule 已初始化或不存在)"
-        fi
-        cd ..
-    fi
-    
-    echo "  ✓ Git submodules 初始化完成"
+    cd ..
 fi
+
+# Lab 5 - IoT Integration
+if [ -d "lab5-iot-integration" ]; then
+    cd lab5-iot-integration
+    if [ -f ".gitmodules" ]; then
+        git submodule update --init --recursive 2>/dev/null || echo "  (lab5 submodule 已初始化或不存在)"
+    fi
+    cd ..
+fi
+
+echo "  ✓ Git submodules 初始化完成"
 
 # 11. 复制 nlohmann/json 到各 lab 目录
 echo ""
-echo "[11/12] 复制依赖库到 lab 目录..."
+echo "[11/11] 复制依赖库到 lab 目录..."
 if [ -d "$WORKSHOP_DIR" ]; then
     # Lab 1
     if [ -d "$WORKSHOP_DIR/lab1-hello-world" ] && [ ! -d "$WORKSHOP_DIR/lab1-hello-world/nlohmann" ]; then
@@ -260,6 +251,8 @@ if [ -d "$WORKSHOP_DIR" ]; then
     fi
     
     echo "  ✓ 依赖库复制完成"
+else
+    echo "  ⚠ Workshop 目录未找到,跳过"
 fi
 
 # 12. 验证安装
@@ -289,20 +282,6 @@ if [ -f "/usr/local/lib/libGreengrassIpc-cpp.so" ] || [ -f "/usr/local/lib64/lib
     echo "  ✓ AWS IoT SDK: 已编译安装"
 else
     echo "  ⚠ AWS IoT SDK: 未安装 (Lab4/Lab5 需要)"
-fi
-    echo "  ✓ lib60870: 已安装"
-else
-    echo "  ✗ lib60870: 未安装"
-fi
-if [ -d "$WORKSHOP_DIR/lab4-iec104-collector/aws-iot-device-sdk-cpp-v2" ]; then
-    echo "  ✓ AWS IoT SDK (lab4): 已下载"
-else
-    echo "  ⚠ AWS IoT SDK (lab4): 未下载 (将在构建时自动下载)"
-fi
-if [ -d "$WORKSHOP_DIR/lab5-iot-integration/aws-iot-device-sdk-cpp-v2" ]; then
-    echo "  ✓ AWS IoT SDK (lab5): 已下载"
-else
-    echo "  ⚠ AWS IoT SDK (lab5): 未下载 (将在构建时自动下载)"
 fi
 echo "=========================================="
 
