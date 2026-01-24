@@ -1027,9 +1027,6 @@ aws iot-data subscribe \
 4. 输入 Topic: `wind-farm/data`
 5. 点击 **Subscribe**
 
-![IoT Core MQTT 测试客户端](images/iot-core-mqtt-test.png)
-*截图位置: IoT Core MQTT 测试客户端*
-
 **预期看到的消息**:
 ```json
 [
@@ -1053,7 +1050,7 @@ aws iot-data subscribe \
 ![IoT Core 接收到的消息](images/iot-core-messages.png)
 *截图位置: IoT Core 接收到的消息*
 
-#### 9.3 使用 mosquitto_sub 订阅 (本地测试)
+#### 9.3 使用 mosquitto_sub 订阅 (可选做)
 
 ```bash
 # 安装 mosquitto 客户端
@@ -1095,17 +1092,21 @@ sudo grep "Published to IoT Core" /greengrass/v2/logs/com.example.IoTPublisher.l
 
 #### 9.5 性能监控
 
-**查看消息队列大小**:
+**查看消息接收和发布**:
 ```bash
-# 查看日志中的队列大小
-sudo grep "Message queued" /greengrass/v2/logs/com.example.IoTPublisher.log | tail -20
+# 查看接收到的 IPC 消息
+sudo grep "Received IPC message" /greengrass/v2/logs/com.example.IoTPublisher.log | tail -20
+
+# 查看发布到 IoT Core 的消息
+sudo grep "Published to IoT Core" /greengrass/v2/logs/com.example.IoTPublisher.log | tail -20
 ```
 
-**预期**: 队列大小应该保持在较小值 (< 10)
+**预期**: 应该看到持续的消息接收和发布日志
 
-**如果队列持续增长**:
-- 可能是发布速度慢于接收速度
-- 需要优化发布逻辑或增加处理线程
+**如果没有消息**:
+- 检查 IEC104Collector 是否正在发布数据
+- 检查 IPC topic 名称是否匹配 (`iec104/data`)
+- 检查 AccessControl 权限配置
 
 **查看组件资源使用**:
 ```bash
