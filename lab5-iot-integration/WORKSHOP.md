@@ -274,7 +274,7 @@ lab5-iot-integration/
 #### 1.1 进入实验目录
 
 ```bash
-cd /home/ubuntu/iec104-greengrass/workshop/lab5-iot-integration
+/home/ubuntu/greengrass-iec104-cpp-workshop/lab5-iot-integration
 ```
 
 #### 1.2 下载并编译 AWS IoT SDK (如果还没有)
@@ -344,7 +344,7 @@ export THING_NAME="GreengrassQuickStartCore-19be3781cbc"
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
 # 设置组件版本
-export VERSION="1.0.1"
+export VERSION="1.0.0"
 export COMPONENT_NAME="com.example.IoTPublisher"
 ```
 
@@ -634,7 +634,7 @@ request.SetQos(QOS_AT_MOST_ONCE);
 
 ---
 
-### 步骤 4: 本地构建和测试
+### 步骤 4: 本地构建
 
 #### 4.1 构建组件
 
@@ -665,38 +665,7 @@ ls -lh build/iot_publisher
 file build/iot_publisher
 ```
 
-#### 4.3 本地测试 (模拟 IPC 消息)
-
-**准备测试配置**:
-
-```bash
-# 创建测试配置文件
-cat > /tmp/publisher-config.json << 'EOF'
-{
-  "ipcTopic": "iec104/data",
-  "iotTopic": "wind-farm/data",
-  "qos": "AT_LEAST_ONCE"
-}
-EOF
-```
-
-**注意**: 本地测试需要 Greengrass 环境,因为需要连接到 IPC。
-
-```bash
-# 在 Greengrass 环境中测试
-sudo -E ./build/iot_publisher /tmp/publisher-config.json
-```
-
-**预期输出**:
-```
-[INFO] IoT Publisher starting...
-[INFO] Configuration loaded
-[INFO] Connected to Greengrass IPC
-[INFO] Subscribed to IPC topic: iec104/data
-[INFO] Waiting for messages...
-[DEBUG] Message queued, size: 1
-[INFO] Published to IoT Core topic: wind-farm/data
-```
+**注意**: Lab5 组件需要 Greengrass IPC 环境才能运行(订阅和发布),因此跳过本地测试,直接进行打包和部署。
 
 ---
 
