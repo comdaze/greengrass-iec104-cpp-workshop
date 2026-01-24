@@ -2,7 +2,7 @@
 set -e
 
 COMPONENT_NAME="com.example.IEC104Collector"
-COMPONENT_VERSION="1.0.16"
+COMPONENT_VERSION="${VERSION:-1.0.1}"
 
 echo "Packaging ${COMPONENT_NAME} v${COMPONENT_VERSION}..."
 
