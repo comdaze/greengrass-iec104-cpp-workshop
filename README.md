@@ -350,7 +350,7 @@ aws greengrassv2 create-deployment \
   --deployment-name "Deploy-CLI-$(date +%s)" \
   --components '{
     "aws.greengrass.Cli": {
-      "componentVersion": "2.12.0"
+      "componentVersion": "2.16.0"
     }
   }' \
   --region ${AWS_REGION}
@@ -362,6 +362,26 @@ sudo /greengrass/v2/bin/greengrass-cli component list
 **如果不部署 CLI**: 可以使用日志文件和 AWS CLI 作为替代方案(详见各 Lab 的 Workshop 向导)。
 
 ### 步骤 6: 部署组件
+
+**方法 1: 一键部署所有组件 (推荐)**
+
+```bash
+# 使用统一部署脚本
+./deploy-all.sh
+```
+
+这个脚本会部署所有 Workshop 组件:
+- aws.greengrass.Cli (v2.16.0)
+- aws.greengrass.LogManager (v2.3.11)
+- com.example.HelloWorld (Lab 1)
+- com.example.ConfigDemo (Lab 2)
+- com.example.IEC104SimulatorDocker (Lab 3)
+- com.example.IEC104Collector (Lab 4)
+- com.example.IoTPublisher (Lab 5)
+
+**方法 2: 逐个部署 (学习模式)**
+
+按照 Workshop 顺序逐个构建和部署:
 
 ```bash
 # Lab 3: IEC104 Simulator
