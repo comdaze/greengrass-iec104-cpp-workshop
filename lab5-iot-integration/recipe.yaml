@@ -55,5 +55,5 @@ Manifests:
           pkill -TERM iot_publisher || true
               
     Artifacts:
-      - URI: "s3://iec104-components-1769083050/com.example.IoTPublisher/1.0.0/com.example.IoTPublisher-1.0.0.zip"
+      - URI: "s3://your-bucket/com.example.IoTPublisher/1.0.0/com.example.IoTPublisher-1.0.0.zip"
         Unarchive: ZIP
