@@ -2,4 +2,4 @@ build/
 artifacts/
 *.zip
 *.log
-.kiro
+.kiro/

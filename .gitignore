@@ -38,3 +38,5 @@ lab3-iec104-simulator/lib60870/
 # AWS SDK (large)
 lab4-iec104-collector/aws-iot-device-sdk-cpp-v2/
 lab5-iot-integration/aws-iot-device-sdk-cpp-v2/
+
+.kiro/
