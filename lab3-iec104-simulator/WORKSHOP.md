@@ -1014,7 +1014,7 @@ aws greengrassv2 create-component-version \
 
 ```bash
 # 设置环境变量
-export THING_NAME="MyGreengrassCore-sean"
+export THING_NAME="MyGreengrassCore"  # 替换为你的 Thing 名称
 export COMPONENT_VERSION="1.0.0"
 
 # 创建部署
@@ -1022,6 +1022,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Simulator-Docker-$(date +%s)" \
   --components "{
+    \"aws.greengrass.Cli\": {
+      \"componentVersion\": \"2.16.0\"
+    },
     \"com.example.IEC104SimulatorDocker\": {
       \"componentVersion\": \"${COMPONENT_VERSION}\",
       \"configurationUpdate\": {
