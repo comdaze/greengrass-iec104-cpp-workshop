@@ -34,13 +34,13 @@ COMPONENTS='{
     }
   },
   "com.example.IEC104SimulatorDocker": {
-    "componentVersion": "1.0.3"
+    "componentVersion": "1.0.0"
   },
   "com.example.IEC104Collector": {
-    "componentVersion": "1.0.1"
+    "componentVersion": "1.0.0"
   },
   "com.example.IoTPublisher": {
-    "componentVersion": "1.0.1"
+    "componentVersion": "1.0.0"
   }
 }'
 
