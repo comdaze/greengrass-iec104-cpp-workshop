@@ -950,8 +950,15 @@ ImageUri: "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.
 
 #### 7.5 转换 Recipe 为 JSON
 
+**方法 1: 使用提供的脚本 (推荐)**
+
 ```bash
-# 使用 Python 转换
+./convert-recipe.sh recipe-updated.yaml recipe.json
+```
+
+**方法 2: 使用 Python 命令**
+
+```bash
 python3 << 'EOF'
 import yaml
 import json
@@ -964,6 +971,13 @@ with open('recipe.json', 'w') as f:
 
 print("✅ Recipe converted to JSON")
 EOF
+```
+
+**验证转换结果**:
+
+```bash
+# 查看 JSON 文件
+cat recipe.json | head -20
 ```
 
 ---
