@@ -689,7 +689,7 @@ unzip -l artifacts/com.example.IoTPublisher-${VERSION}.zip
 
 **预期输出**:
 ```
-Archive:  artifacts/com.example.IoTPublisher-1.0.1.zip
+Archive:  artifacts/com.example.IoTPublisher-1.0.0.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
         0  2026-01-23 11:00   iot_publisher/

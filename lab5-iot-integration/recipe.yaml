@@ -1,7 +1,7 @@
 ---
 RecipeFormatVersion: "2020-01-25"
 ComponentName: "com.example.IoTPublisher"
-ComponentVersion: "1.0.4"
+ComponentVersion: "1.0.0"
 ComponentDescription: "IoT Core publisher with IPC subscription"
 ComponentPublisher: "Workshop"
 
@@ -27,7 +27,7 @@ ComponentConfiguration:
 
 ComponentDependencies:
   com.example.IEC104Collector:
-    VersionRequirement: ">=1.0.4"
+    VersionRequirement: ">=1.0.0"
     DependencyType: "SOFT"
 
 Manifests:
@@ -37,7 +37,7 @@ Manifests:
       Install:
         Script: |
           echo "Installing IoT Publisher..."
-          chmod +x {artifacts:decompressedPath}/com.example.IoTPublisher-1.0.4/iot_publisher/iot_publisher
+          chmod +x {artifacts:decompressedPath}/com.example.IoTPublisher-1.0.0/iot_publisher/iot_publisher
           
       Run:
         Script: |
@@ -47,7 +47,7 @@ Manifests:
             "iotTopic": "{configuration:/iotTopic}"
           }
           EOF
-          {artifacts:decompressedPath}/com.example.IoTPublisher-1.0.4/iot_publisher/iot_publisher /tmp/iot-publisher-config.json
+          {artifacts:decompressedPath}/com.example.IoTPublisher-1.0.0/iot_publisher/iot_publisher /tmp/iot-publisher-config.json
         
       Shutdown:
         Script: |
@@ -55,5 +55,5 @@ Manifests:
           pkill -TERM iot_publisher || true
               
     Artifacts:
-      - URI: "s3://iec104-components-1769083050/com.example.IoTPublisher/1.0.4/com.example.IoTPublisher-1.0.4.zip"
+      - URI: "s3://iec104-components-1769083050/com.example.IoTPublisher/1.0.0/com.example.IoTPublisher-1.0.0.zip"
         Unarchive: ZIP
