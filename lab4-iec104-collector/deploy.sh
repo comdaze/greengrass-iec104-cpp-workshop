@@ -6,8 +6,8 @@ export AWS_REGION="${AWS_REGION:-ap-northeast-1}"
 export THING_NAME="${THING_NAME:-MyGreengrassCore}"
 
 COMPONENT_NAME="com.example.IEC104Collector"
-COMPONENT_VERSION="1.0.16"
-SIMULATOR_VERSION="1.0.3"
+COMPONENT_VERSION="1.0.0"
+SIMULATOR_VERSION="1.0.0"
 
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 

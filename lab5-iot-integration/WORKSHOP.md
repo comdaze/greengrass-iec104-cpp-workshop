@@ -847,7 +847,7 @@ aws greengrassv2 create-component-version \
 **预期输出**:
 ```json
 {
-    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.IoTPublisher:versions:1.0.1",
+    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.IoTPublisher:versions:1.0.0",
     "componentName": "com.example.IoTPublisher",
     "componentVersion": "1.0.1",
     "creationTimestamp": "2026-01-23T12:00:00.000000+00:00",
@@ -877,7 +877,7 @@ aws greengrassv2 create-deployment \
       }
     },
     "com.example.IEC104Collector": {
-      "componentVersion": "1.0.1",
+      "componentVersion": "1.0.0",
       "configurationUpdate": {
         "merge": "{\"serverHost\":\"localhost\",\"serverPort\":2404,\"ipcTopic\":\"iec104/data\",\"accessControl\":{\"aws.greengrass.ipc.pubsub\":{\"com.example.IEC104Collector:pubsub:1\":{\"policyDescription\":\"Allow publishing to iec104/data topic\",\"operations\":[\"aws.greengrass#PublishToTopic\"],\"resources\":[\"iec104/data\"]}}}}"
       }
@@ -900,8 +900,7 @@ aws greengrassv2 create-deployment \
 **预期输出**:
 ```json
 {
-    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
-    "iotJobId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE22222"
+    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111"
 }
 ```
 
@@ -909,44 +908,6 @@ aws greengrassv2 create-deployment \
 # 保存部署 ID
 export DEPLOYMENT_ID="<your-deployment-id>"
 ```
-
-**使用 AWS 管理控制台**:
-
-1. 在 **Core devices** 页面,点击你的设备
-2. 点击 **Deploy** 按钮
-3. 选择 **Revise deployment**
-4. 确保包含三个组件:
-   - `com.example.IEC104SimulatorDocker` (版本 1.0.0)
-   - `com.example.IEC104Collector` (版本 1.0.1)
-   - `com.example.IoTPublisher` (版本 1.0.1)
-5. 配置 IoTPublisher:
-```json
-{
-  "ipcTopic": "iec104/data",
-  "iotTopic": "wind-farm/data",
-  "qos": "AT_LEAST_ONCE",
-  "accessControl": {
-    "aws.greengrass.ipc.pubsub": {
-      "com.example.IoTPublisher:pubsub:1": {
-        "policyDescription": "Allow subscribing to iec104/data topic",
-        "operations": ["aws.greengrass#SubscribeToTopic"],
-        "resources": ["iec104/data"]
-      }
-    },
-    "aws.greengrass.ipc.mqttproxy": {
-      "com.example.IoTPublisher:mqttproxy:1": {
-        "policyDescription": "Allow publishing to IoT Core",
-        "operations": ["aws.greengrass#PublishToIoTCore"],
-        "resources": ["wind-farm/data"]
-      }
-    }
-  }
-}
-```
-6. 点击 **Deploy**
-
-![部署完整数据管道](images/deploy-complete-pipeline.png)
-*截图位置: 部署完整数据管道配置*
 
 #### 7.3 监控部署状态
 
@@ -985,10 +946,10 @@ Component Name: com.example.IEC104SimulatorDocker
     Version: 1.0.0
     State: RUNNING
 Component Name: com.example.IEC104Collector
-    Version: 1.0.1
+    Version: 1.0.0
     State: RUNNING
 Component Name: com.example.IoTPublisher
-    Version: 1.0.1
+    Version: 1.0.0
     State: RUNNING
     Configuration: {"ipcTopic":"iec104/data","iotTopic":"wind-farm/data",...}
 ```
