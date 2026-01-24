@@ -29,7 +29,7 @@
 sudo /greengrass/v2/bin/greengrass-cli component list | grep -E "IEC104|Simulator"
 
 # 测试 IPC topic 是否有数据
-sudo /greengrass/v2/bin/greengrass-cli pubsub subscribe --topic iec104/data
+sudo /greengrass/v2/bin/greengrass-cli pubsub sub --topic iec104/data
 
 # 检查 IoT Core 连接
 aws iot describe-endpoint --endpoint-type iot:Data-ATS --region ${AWS_REGION}
@@ -358,7 +358,7 @@ docker ps | grep iec104-simulator
 sudo /greengrass/v2/bin/greengrass-cli component list | grep IEC104Collector
 
 # 测试 IPC topic 是否有数据
-sudo /greengrass/v2/bin/greengrass-cli pubsub subscribe --topic iec104/data
+sudo /greengrass/v2/bin/greengrass-cli pubsub sub --topic iec104/data
 ```
 
 **预期输出** (IPC 订阅):

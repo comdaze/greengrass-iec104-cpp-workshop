@@ -957,8 +957,7 @@ aws greengrassv2 create-deployment \
 **预期输出**:
 ```json
 {
-    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
-    "iotJobId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE22222"
+    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111"
 }
 ```
 
@@ -966,36 +965,6 @@ aws greengrassv2 create-deployment \
 # 保存部署 ID
 export DEPLOYMENT_ID="<your-deployment-id>"
 ```
-
-**使用 AWS 管理控制台**:
-
-1. 在 **Core devices** 页面,点击你的设备
-2. 点击 **Deploy** 按钮
-3. 选择 **Revise deployment**
-4. 确保包含两个组件:
-   - `com.example.IEC104SimulatorDocker` (版本 1.0.0)
-   - `com.example.IEC104Collector` (版本 1.0.1)
-5. 配置 IEC104Collector:
-```json
-{
-  "serverHost": "localhost",
-  "serverPort": 2404,
-  "ipcTopic": "iec104/data",
-  "accessControl": {
-    "aws.greengrass.ipc.pubsub": {
-      "com.example.IEC104Collector:pubsub:1": {
-        "policyDescription": "Allow publishing to iec104/data topic",
-        "operations": ["aws.greengrass#PublishToTopic"],
-        "resources": ["iec104/data"]
-      }
-    }
-  }
-}
-```
-6. 点击 **Deploy**
-
-![部署 IEC104 Collector](images/deploy-iec104-collector.png)
-*截图位置: 部署 IEC104 Collector 配置*
 
 #### 7.3 监控部署状态
 
@@ -1089,7 +1058,7 @@ sudo grep "Published" /greengrass/v2/logs/com.example.IEC104Collector.log
 
 ```bash
 # 订阅 IPC topic (需要在另一个终端运行)
-sudo /greengrass/v2/bin/greengrass-cli pubsub subscribe \
+sudo /greengrass/v2/bin/greengrass-cli pubsub sub \
   --topic iec104/data
 ```
 
@@ -1424,7 +1393,7 @@ sudo grep "Published" /greengrass/v2/logs/com.example.IEC104Collector.log
 
 **方法 2**: 使用 CLI 订阅
 ```bash
-sudo /greengrass/v2/bin/greengrass-cli pubsub subscribe --topic iec104/data
+sudo /greengrass/v2/bin/greengrass-cli pubsub sub --topic iec104/data
 ```
 
 **方法 3**: 部署订阅者组件 (Lab 5)
