@@ -1,7 +1,7 @@
 ---
 RecipeFormatVersion: "2020-01-25"
 ComponentName: "com.example.IEC104SimulatorDocker"
-ComponentVersion: "1.0.3"
+ComponentVersion: "1.0.0"
 ComponentDescription: "IEC104 Simulator running in Docker container (ECR image)"
 ComponentPublisher: "Workshop"
 

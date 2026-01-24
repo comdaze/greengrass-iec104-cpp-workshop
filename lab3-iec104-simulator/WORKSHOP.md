@@ -226,7 +226,7 @@ lab3-iec104-simulator/
 #### 1.1 进入实验目录
 
 ```bash
-cd /home/ubuntu/iec104-greengrass/workshop/lab3-iec104-simulator
+/home/ubuntu/greengrass-iec104-cpp-workshop/lab3-iec104-simulator
 ```
 
 #### 1.2 设置环境变量
@@ -718,6 +718,8 @@ e16c52e9c8e5: Pushed
 
 **使用推送脚本**:
 
+(以上手动执行了推送，可忽略)
+
 ```bash
 # 查看推送脚本
 cat push-to-ecr.sh
@@ -778,15 +780,13 @@ aws ecr describe-images \
 
 **Docker 组件的特殊之处**:
 
-```yaml
-ComponentType: aws.greengrass.generic
-# 不是 aws.greengrass.docker,而是使用 generic 类型
-# 在 Lifecycle 脚本中手动管理 Docker 容器
-```
+- Greengrass v2 中运行 Docker 容器**不需要特殊的组件类型**
+- 使用标准 Recipe 格式,在 Lifecycle 脚本中手动管理 Docker 容器
+- 依赖 `aws.greengrass.DockerApplicationManager` 组件来管理 Docker 镜像下载
 
 **为什么不使用 aws.greengrass.docker?**
-- `aws.greengrass.docker` 类型已弃用
-- 使用 `generic` 类型提供更大灵活性
+- `aws.greengrass.docker` 类型在 Greengrass v2 中已弃用
+- 现在使用标准 Recipe + Lifecycle 脚本提供更大灵活性
 - 可以自定义容器启动参数和网络配置
 
 #### 7.2 查看 Recipe 配置
@@ -802,8 +802,8 @@ cat recipe.yaml
 RecipeFormatVersion: "2020-01-25"
 ComponentName: "com.example.IEC104SimulatorDocker"
 ComponentVersion: "1.0.0"
-ComponentType: "aws.greengrass.generic"
 ComponentDescription: "IEC104 Simulator running in Docker container"
+# 注意:不需要 ComponentType 字段
 ```
 
 **2. 配置参数**:
