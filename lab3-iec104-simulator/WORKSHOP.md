@@ -1008,25 +1008,13 @@ aws greengrassv2 create-component-version \
 }
 ```
 
-**使用 AWS 管理控制台**:
-
-1. 打开 [AWS IoT 控制台](https://console.amazonaws.cn/iot/)
-2. 左侧菜单: **Manage** → **Greengrass devices** → **Components**
-3. 点击 **Create component**
-4. 选择 **Enter recipe as JSON**
-5. 粘贴 `recipe.json` 的内容
-6. 点击 **Create component**
-
-![创建 Docker 组件](images/create-docker-component.png)
-*截图位置: 创建 Docker 组件界面*
-
 #### 8.2 部署组件
 
 **使用 AWS CLI**:
 
 ```bash
 # 设置环境变量
-export THING_NAME="GreengrassQuickStartCore-19be3781cbc"
+export THING_NAME="MyGreengrassCore-sean"
 export COMPONENT_VERSION="1.0.0"
 
 # 创建部署
@@ -1047,8 +1035,7 @@ aws greengrassv2 create-deployment \
 **预期输出**:
 ```json
 {
-    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
-    "iotJobId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE22222"
+    "deploymentId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111"
 }
 ```
 
@@ -1057,25 +1044,6 @@ aws greengrassv2 create-deployment \
 export DEPLOYMENT_ID="<your-deployment-id>"
 ```
 
-**使用 AWS 管理控制台**:
-
-1. 在 **Core devices** 页面,点击你的设备
-2. 点击 **Deploy** 按钮
-3. 选择 **Revise deployment**
-4. 添加组件: `com.example.IEC104SimulatorDocker`
-5. 选择版本: `1.0.0`
-6. 配置组件:
-```json
-{
-  "ImageUri": "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/iec104-simulator:1.0.0",
-  "ContainerName": "iec104-simulator",
-  "HostPort": "2404"
-}
-```
-7. 点击 **Deploy**
-
-![部署 Docker 组件](images/deploy-docker-component.png)
-*截图位置: 部署 Docker 组件配置*
 
 #### 8.3 监控部署状态
 
@@ -1110,7 +1078,7 @@ watch -n 5 "aws greengrassv2 get-deployment \
 
 ### 步骤 9: 验证和测试
 
-#### 9.1 查看组件状态
+#### 9.1 查看组件状态（如果同时部署了greengrass-cli组件）
 
 ```bash
 # 查看组件列表

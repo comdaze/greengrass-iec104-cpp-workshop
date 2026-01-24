@@ -223,18 +223,76 @@ lab4-iec104-collector/
 #### 1.1 进入实验目录
 
 ```bash
-cd /home/ubuntu/iec104-greengrass/workshop/lab4-iec104-collector
+/home/ubuntu/greengrass-iec104-cpp-workshop/lab4-iec104-collector
 ```
 
-#### 1.2 下载 AWS IoT SDK (首次)
+#### 1.2 下载并编译 AWS IoT SDK
+
+AWS IoT Device SDK for C++ v2 需要先编译安装,才能在 build.sh 中使用。
+
+**步骤 1: 下载 SDK**
 
 ```bash
-# 初始化 submodule
-git submodule update --init --recursive
+# 下载 AWS IoT C++ SDK (如果还没有)
+git clone --recursive https://github.com/aws/aws-iot-device-sdk-cpp-v2.git
 
 # 验证 SDK 已下载
 ls -la aws-iot-device-sdk-cpp-v2/
 ```
+
+**步骤 2: 编译并安装 SDK**
+
+```bash
+cd aws-iot-device-sdk-cpp-v2
+
+# 创建构建目录
+mkdir -p build
+cd build
+
+# 配置 CMake
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_DEPS=ON \
+  -DCMAKE_INSTALL_PREFIX=/usr/local
+
+# 编译 (使用所有 CPU 核心)
+make -j$(nproc)
+
+# 安装到系统目录
+sudo make install
+
+# 更新动态链接库缓存
+sudo ldconfig
+
+cd ../..
+```
+
+**步骤 3: 验证安装**
+
+```bash
+# 检查头文件
+ls /usr/local/include/aws/greengrass/
+
+# 检查库文件
+ls /usr/local/lib/libGreengrassIpc-cpp.* 2>/dev/null || \
+ls /usr/local/lib64/libGreengrassIpc-cpp.* 2>/dev/null
+```
+
+**预期输出**:
+```
+/usr/local/include/aws/greengrass/
+├── GreengrassCoreIpcClient.h
+├── GreengrassCoreIpcModel.h
+└── ...
+
+/usr/local/lib/libGreengrassIpc-cpp.so
+/usr/local/lib/libaws-crt-cpp.so
+```
+
+**注意**: 
+- 编译过程可能需要 5-10 分钟
+- 需要至少 2GB 可用内存
+- 如果编译失败,检查是否安装了所有依赖 (gcc, cmake, libssl-dev 等)
 
 #### 1.3 设置环境变量
 

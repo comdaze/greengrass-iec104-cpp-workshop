@@ -277,7 +277,11 @@ lab5-iot-integration/
 cd /home/ubuntu/iec104-greengrass/workshop/lab5-iot-integration
 ```
 
-#### 1.2 下载 AWS IoT SDK (如果还没有)
+#### 1.2 下载并编译 AWS IoT SDK (如果还没有)
+
+**如果在 Lab4 中已经编译安装过 SDK,可以跳过此步骤。**
+
+**步骤 1: 下载 SDK**
 
 ```bash
 # 初始化 submodule
@@ -286,6 +290,43 @@ git submodule update --init --recursive
 # 验证 SDK 已下载
 ls -la aws-iot-device-sdk-cpp-v2/
 ```
+
+**步骤 2: 编译并安装 SDK (如果还没有)**
+
+```bash
+cd aws-iot-device-sdk-cpp-v2
+
+# 创建构建目录
+mkdir -p build
+cd build
+
+# 配置 CMake
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_DEPS=ON \
+  -DCMAKE_INSTALL_PREFIX=/usr/local
+
+# 编译 (使用所有 CPU 核心)
+make -j$(nproc)
+
+# 安装到系统目录
+sudo make install
+
+# 更新动态链接库缓存
+sudo ldconfig
+
+cd ../..
+```
+
+**步骤 3: 验证安装**
+
+```bash
+# 检查库文件
+ls /usr/local/lib/libGreengrassIpc-cpp.* 2>/dev/null || \
+ls /usr/local/lib64/libGreengrassIpc-cpp.* 2>/dev/null
+```
+
+**注意**: 如果在 Lab4 中已经安装,这里会显示已存在的库文件。
 
 #### 1.3 设置环境变量
 
