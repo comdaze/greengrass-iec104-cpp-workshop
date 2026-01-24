@@ -202,35 +202,10 @@ else
     rm -rf "$SDK_BUILD_DIR"
 fi
 
-# 10. 初始化 Git Submodules (Lab4 和 Lab5)
+# 10. 复制 nlohmann/json 到各 lab 目录
 echo ""
-echo "[10/11] 初始化 Git Submodules..."
+echo "[10/10] 复制依赖库到 lab 目录..."
 WORKSHOP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$WORKSHOP_DIR"
-
-# Lab 4 - IEC104 Collector
-if [ -d "lab4-iec104-collector" ]; then
-    cd lab4-iec104-collector
-    if [ -f ".gitmodules" ]; then
-        git submodule update --init --recursive 2>/dev/null || echo "  (lab4 submodule 已初始化或不存在)"
-    fi
-    cd ..
-fi
-
-# Lab 5 - IoT Integration
-if [ -d "lab5-iot-integration" ]; then
-    cd lab5-iot-integration
-    if [ -f ".gitmodules" ]; then
-        git submodule update --init --recursive 2>/dev/null || echo "  (lab5 submodule 已初始化或不存在)"
-    fi
-    cd ..
-fi
-
-echo "  ✓ Git submodules 初始化完成"
-
-# 11. 复制 nlohmann/json 到各 lab 目录
-echo ""
-echo "[11/11] 复制依赖库到 lab 目录..."
 if [ -d "$WORKSHOP_DIR" ]; then
     # Lab 1
     if [ -d "$WORKSHOP_DIR/lab1-hello-world" ] && [ ! -d "$WORKSHOP_DIR/lab1-hello-world/nlohmann" ]; then
@@ -255,9 +230,9 @@ else
     echo "  ⚠ Workshop 目录未找到,跳过"
 fi
 
-# 12. 验证安装
+# 11. 验证安装
 echo ""
-echo "[12/12] 验证安装..."
+echo "[11/11] 验证安装..."
 echo "=========================================="
 echo "系统工具:"
 echo "  ✓ GCC: $(gcc --version | head -n 1)"
