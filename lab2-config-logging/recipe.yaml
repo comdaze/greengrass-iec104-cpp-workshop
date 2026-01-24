@@ -45,5 +45,5 @@ Manifests:
           pkill -TERM config_demo || true
           
     Artifacts:
-      - URI: "s3://iec104-greengrass-components-1769054416/com.example.ConfigDemo/1.0.0/com.example.ConfigDemo-1.0.0.zip"
+      - URI: "s3://your-bucket/com.example.ConfigDemo/1.0.0/com.example.ConfigDemo-1.0.0.zip"
         Unarchive: ZIP
