@@ -531,6 +531,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Lab2-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.ConfigDemo": {
       "componentVersion": "'"${VERSION}"'",
       "configurationUpdate": {
@@ -645,6 +648,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-LogLevel-WARN-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.ConfigDemo": {
       "componentVersion": "'"${VERSION}"'",
       "configurationUpdate": {
@@ -671,6 +677,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "ConfigDemo-Interval-10s-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.ConfigDemo": {
       "componentVersion": "'"${VERSION}"'",
       "configurationUpdate": {

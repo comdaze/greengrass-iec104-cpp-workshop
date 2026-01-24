@@ -898,6 +898,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Complete-Pipeline-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.IEC104SimulatorDocker": {
       "componentVersion": "1.0.0",
       "configurationUpdate": {

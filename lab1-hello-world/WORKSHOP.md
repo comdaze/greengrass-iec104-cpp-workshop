@@ -580,6 +580,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Lab1-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.HelloWorld": {
       "componentVersion": "1.0.0",
       "configurationUpdate": {
@@ -817,6 +820,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Config-Update-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.HelloWorld": {
       "componentVersion": "1.0.0",
       "configurationUpdate": {
@@ -897,6 +903,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "HelloWorld-Reset-Default-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.HelloWorld": {
       "componentVersion": "1.0.0",
       "configurationUpdate": {
@@ -1133,6 +1142,9 @@ aws greengrassv2 create-deployment \
 aws greengrassv2 create-deployment \
   --target-arn "..." \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.HelloWorld": {
       "componentVersion": "1.0.0"
     }

@@ -909,9 +909,9 @@ aws greengrassv2 create-component-version \
 **预期输出**:
 ```json
 {
-    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.IEC104Collector:versions:1.0.1",
+    "arn": "arn:aws:greengrass:ap-northeast-1:123456789012:components:com.example.IEC104Collector:versions:1.0.0",
     "componentName": "com.example.IEC104Collector",
-    "componentVersion": "1.0.1",
+    "componentVersion": "1.0.0",
     "creationTimestamp": "2026-01-23T11:00:00.000000+00:00",
     "status": {
         "componentState": "REQUESTED"
@@ -929,6 +929,9 @@ aws greengrassv2 create-deployment \
   --target-arn "arn:aws:iot:${AWS_REGION}:${ACCOUNT_ID}:thing/${THING_NAME}" \
   --deployment-name "IEC104-Full-Stack-$(date +%s)" \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.IEC104SimulatorDocker": {
       "componentVersion": "1.0.0",
       "configurationUpdate": {

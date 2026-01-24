@@ -1451,6 +1451,9 @@ docker push ${ECR_REPO}:1.0.1
 aws greengrassv2 create-deployment \
   --target-arn "..." \
   --components '{
+    "aws.greengrass.Cli": {
+      "componentVersion": "2.16.0"
+    },
     "com.example.IEC104SimulatorDocker": {
       "componentVersion": "1.0.0",
       "configurationUpdate": {
