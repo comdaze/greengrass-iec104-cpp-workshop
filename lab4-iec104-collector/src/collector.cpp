@@ -130,26 +130,39 @@ int main(int argc, char* argv[]) {
     
     Config config = loadConfig(argc > 1 ? argv[1] : "/tmp/collector-config.json");
     
+    // 检查是否在 Greengrass 环境中运行
+    const char* ipcSocket = std::getenv("AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT");
+    bool isGreengrassEnv = (ipcSocket != nullptr);
+    
+    std::cout << "[INFO] Running mode: " << (isGreengrassEnv ? "Greengrass" : "Local Test") << std::endl;
+    
     ApiHandle apiHandle(g_allocator);
     Io::EventLoopGroup eventLoopGroup(1);
     Io::DefaultHostResolver defaultHostResolver(eventLoopGroup, 64, 30);
     Io::ClientBootstrap clientBootstrap(eventLoopGroup, defaultHostResolver);
     
-    GreengrassCoreIpcClient ipcClient(clientBootstrap);
+    GreengrassCoreIpcClient* ipcClient = nullptr;
     
-    class MyLifecycleHandler : public ConnectionLifecycleHandler {
-        void OnConnectCallback() override { std::cout << "[INFO] IPC Connected" << std::endl; }
-        void OnDisconnectCallback(RpcError error) override {}
-        bool OnErrorCallback(RpcError error) override { return true; }
-    };
-    
-    MyLifecycleHandler lifecycleHandler;
-    auto connectionStatus = ipcClient.Connect(lifecycleHandler).get();
-    if (!connectionStatus) {
-        std::cerr << "[ERROR] Failed to connect to IPC: " << connectionStatus.StatusToString() << std::endl;
-        return 1;
+    if (isGreengrassEnv) {
+        ipcClient = new GreengrassCoreIpcClient(clientBootstrap);
+        
+        class MyLifecycleHandler : public ConnectionLifecycleHandler {
+            void OnConnectCallback() override { std::cout << "[INFO] IPC Connected" << std::endl; }
+            void OnDisconnectCallback(RpcError error) override {}
+            bool OnErrorCallback(RpcError error) override { return true; }
+        };
+        
+        MyLifecycleHandler lifecycleHandler;
+        auto connectionStatus = ipcClient->Connect(lifecycleHandler).get();
+        if (!connectionStatus) {
+            std::cerr << "[ERROR] Failed to connect to IPC: " << connectionStatus.StatusToString() << std::endl;
+            delete ipcClient;
+            return 1;
+        }
+        std::cout << "[INFO] Connected to Greengrass IPC" << std::endl;
+    } else {
+        std::cout << "[INFO] Local test mode - IPC disabled, data will be saved to /tmp/iec104-data.json" << std::endl;
     }
-    std::cout << "[INFO] Connected to Greengrass IPC" << std::endl;
     
     CS104_Connection connection = CS104_Connection_create(config.server_host.c_str(), config.server_port);
     CS104_Connection_setASDUReceivedHandler(connection, asduReceivedHandler, NULL);
@@ -171,13 +184,17 @@ int main(int argc, char* argv[]) {
                 if (i % 5 == 0 && i > 0) {
                     std::cout << "[INFO] Cycle " << i << ", data points: " << g_data.size() << std::endl;
                     if (!g_data.empty()) {
-                        publishToIPC(ipcClient, config.ipc_topic, g_data);
+                        // 发布到 IPC (仅在 Greengrass 环境)
+                        if (ipcClient) {
+                            publishToIPC(*ipcClient, config.ipc_topic, g_data);
+                        }
                         
+                        // 保存到本地文件 (本地测试和 Greengrass 都保存)
                         std::ofstream file("/tmp/iec104-data.json");
                         file << g_data.dump(2);
                         file.close();
                         
-                        std::cout << "[INFO] Saved " << g_data.size() << " data points" << std::endl;
+                        std::cout << "[INFO] Saved " << g_data.size() << " data points to /tmp/iec104-data.json" << std::endl;
                         g_data.clear();
                     }
                     std::cout << "[INFO] Sending interrogation command..." << std::endl;
@@ -198,6 +215,11 @@ int main(int argc, char* argv[]) {
     }
     
     CS104_Connection_destroy(connection);
+    
+    if (ipcClient) {
+        delete ipcClient;
+    }
+    
     std::cout << "[INFO] IEC104 Collector stopped" << std::endl;
     return 0;
 }
